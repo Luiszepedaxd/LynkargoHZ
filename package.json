@@ -1,0 +1,14 @@
+{
+  "name": "lynkargo",
+  "version": "1.0.0",
+  "description": "Sitio web de Lynkargo",
+  "main": "index.htm",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "vercel build",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}
