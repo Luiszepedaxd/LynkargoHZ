@@ -66,6 +66,10 @@ ALTER TABLE public.perfiles_extendidos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.notificaciones ENABLE ROW LEVEL SECURITY;
 
 -- 5. POLÍTICAS PARA LA TABLA CUENTAS
+-- Usuarios anónimos pueden insertar nuevos registros (durante registro)
+CREATE POLICY "Usuarios anonimos pueden insertar nuevos registros" ON public.cuentas
+    FOR INSERT WITH CHECK (true);
+
 -- Usuarios pueden ver solo sus propios registros
 CREATE POLICY "Usuarios pueden ver sus propios registros" ON public.cuentas
     FOR SELECT USING (auth.uid() = id);
