@@ -16,13 +16,19 @@ CREATE TABLE IF NOT EXISTS public.cuentas (
 -- Habilitar RLS (Row Level Security)
 ALTER TABLE public.cuentas ENABLE ROW LEVEL SECURITY;
 
--- Política para que los usuarios solo puedan ver y editar sus propios registros
+-- Política para permitir inserción durante el registro
+-- Esta política permite insertar cuando el correo coincide con el usuario autenticado
+CREATE POLICY "Permitir inserción durante registro" ON public.cuentas
+    FOR INSERT WITH CHECK (
+        auth.uid() = id OR 
+        (auth.jwt() ->> 'email')::text = correo
+    );
+
+-- Política para que los usuarios solo puedan ver sus propios registros
 CREATE POLICY "Los usuarios pueden ver sus propios registros" ON public.cuentas
     FOR SELECT USING (auth.uid() = id);
 
-CREATE POLICY "Los usuarios pueden insertar sus propios registros" ON public.cuentas
-    FOR INSERT WITH CHECK (auth.uid() = id);
-
+-- Política para que los usuarios puedan actualizar sus propios registros
 CREATE POLICY "Los usuarios pueden actualizar sus propios registros" ON public.cuentas
     FOR UPDATE USING (auth.uid() = id);
 
