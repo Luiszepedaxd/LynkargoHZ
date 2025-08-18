@@ -91,6 +91,7 @@
             justify-content: space-between;
             align-items: center;
             position: relative;
+            gap: 2rem;
         }
 
         .logo {
@@ -110,29 +111,29 @@
         .user-info {
             display: flex;
             align-items: center;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
             padding: 0.5rem 1rem;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-            border-radius: 25px;
-            color: white;
+            background: var(--bg-white);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            color: var(--primary-color);
             font-weight: 600;
             font-size: 0.9rem;
             box-shadow: var(--shadow-sm);
             animation: slideIn 0.5s ease;
-            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .user-info:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
 
         .user-name {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-        }
-
-        .user-name::before {
-            content: '👤';
-            font-size: 1.1rem;
+            font-weight: 600;
         }
 
         @keyframes slideIn {
@@ -674,6 +675,7 @@
                 margin: 0.5rem 0;
                 padding: 0.4rem 0.8rem;
                 font-size: 0.8rem;
+                order: -1;
             }
 
             .hero h1 {
@@ -732,9 +734,6 @@
             <a href="#inicio" class="logo">
                 Lyn<span class="logo-separator">k</span>argo
             </a>
-            <div id="userInfo" class="user-info" style="display: none;">
-                <span class="user-name" id="userName"></span>
-            </div>
             <ul class="nav-links">
                 <li><a href="#inicio" class="nav-link">Inicio</a></li>
                 <li><a href="#que-es" class="nav-link">Qué es</a></li>
@@ -743,6 +742,9 @@
                 <li><a href="#" class="nav-link" id="btnIniciarSesion">Iniciar Sesión</a></li>
                 <li><a href="#" class="nav-cta" id="btnCrearCuenta">Crea tu cuenta</a></li>
             </ul>
+            <div id="userInfo" class="user-info" style="display: none;">
+                <span class="user-name" id="userName"></span>
+            </div>
             <button class="mobile-menu-button" id="mobileMenuBtn">
                 ☰
             </button>
@@ -1468,7 +1470,7 @@
         function updateUIForAuthenticatedUser() {
             // Mostrar información del usuario
             userInfo.style.display = 'flex';
-            userName.textContent = userProfile?.nombre || currentUser.email;
+            userName.textContent = userProfile?.nombre || 'Usuario';
             
             // Cambiar botón de crear cuenta por cerrar sesión
             btnRegistro.textContent = 'Cerrar Sesión';
