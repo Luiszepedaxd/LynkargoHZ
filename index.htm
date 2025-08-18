@@ -1379,6 +1379,10 @@
                     throw new Error('No se pudo crear el usuario');
                 }
 
+                // ⚠️ AGREGAR UN DELAY DE 2 SEGUNDOS PARA EVITAR PROBLEMAS DE TIMING
+                console.log('Usuario creado, esperando 2 segundos para estabilizar...');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
                 // Insertar en tabla cuentas
                 const { error: insertError } = await supabase
                     .from('cuentas')
