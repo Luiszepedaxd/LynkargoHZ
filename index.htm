@@ -643,16 +643,48 @@
         /* Loading States */
         .loading {
             display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,.3);
+            width: 20px;
+            height: 20px;
+            border: 3px solid #e5e7eb;
             border-radius: 50%;
             border-top-color: var(--primary-color);
-            animation: spin 1s ease-in-out infinite;
+            animation: spin 0.8s linear infinite;
+            margin-left: 8px;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+
+        /* Loading overlay para modales */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            border-radius: 12px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f4f6;
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-top: 12px;
+            font-size: 0.9rem;
         }
 
         .hidden {
@@ -1237,7 +1269,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="tipo">Tipo de usuario *</label>
+                    <label for="empresa">Tipo de usuario *</label>
                     <select id="tipo" name="tipo" required>
                         <option value="">Selecciona...</option>
                         <option value="cliente">Cliente</option>
@@ -1247,6 +1279,14 @@
                 
                 <button type="submit" class="btn-registro">Crear Cuenta</button>
             </form>
+            
+            <!-- Loading overlay para registro -->
+            <div id="registroLoading" class="loading-overlay" style="display: none;">
+                <div style="text-align: center;">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Creando cuenta...</div>
+                </div>
+            </div>
             
             <div id="mensaje" class="mensaje" style="display: none;"></div>
         </div>
@@ -1271,6 +1311,14 @@
                 
                 <button type="submit" class="btn-registro">Iniciar Sesión</button>
             </form>
+            
+            <!-- Loading overlay para login -->
+            <div id="loginLoading" class="loading-overlay" style="display: none;">
+                <div style="text-align: center;">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Iniciando sesión...</div>
+                </div>
+            </div>
             
             <div id="loginMensaje" class="mensaje" style="display: none;"></div>
         </div>
@@ -1432,6 +1480,10 @@
         // Elementos de UI
         const userInfo = document.getElementById('userInfo');
         const userName = document.getElementById('userName');
+        
+        // Loading overlays
+        const registroLoading = document.getElementById('registroLoading');
+        const loginLoading = document.getElementById('loginLoading');
 
         // Función para verificar el estado de autenticación
         async function checkAuthState() {
@@ -1578,8 +1630,8 @@
                 return;
             }
 
-            // Mostrar loading
-            mostrarMensaje('Creando cuenta...', 'loading');
+            // Mostrar loading overlay
+            registroLoading.style.display = 'flex';
             const submitBtn = form.querySelector('button[type="submit"]');
             submitBtn.disabled = true;
 
@@ -1633,6 +1685,8 @@
                     throw new Error('Error al guardar los datos del usuario: ' + insertError.message);
                 }
 
+                // Ocultar loading y mostrar mensaje de éxito
+                registroLoading.style.display = 'none';
                 mostrarMensaje('¡Cuenta creada exitosamente! Revisa tu correo para confirmar.', 'success');
                 form.reset();
                 
@@ -1660,6 +1714,8 @@
                 
                 mostrarMensaje(mensajeError, 'error');
             } finally {
+                // Ocultar loading overlay
+                registroLoading.style.display = 'none';
                 submitBtn.disabled = false;
             }
         });
@@ -1678,10 +1734,10 @@
                 return;
             }
 
-            // Mostrar loading
-            mostrarLoginMensaje('Iniciando sesión...', 'loading');
+            // Mostrar loading overlay
+            loginLoading.style.display = 'flex';
             const submitBtn = loginForm.querySelector('button[type="submit"]');
-            submitBtn.disabled = true;
+            submitBtn.disabled = false;
 
             try {
                 // Iniciar sesión en Supabase
@@ -1705,7 +1761,8 @@
                 // Actualizar UI
                 updateUIForAuthenticatedUser();
                 
-                // Cerrar modal
+                // Ocultar loading y cerrar modal
+                loginLoading.style.display = 'none';
                 loginModal.style.display = 'none';
                 document.body.style.overflow = 'auto';
                 
@@ -1728,6 +1785,8 @@
                 
                 mostrarLoginMensaje(mensajeError, 'error');
             } finally {
+                // Ocultar loading overlay
+                loginLoading.style.display = 'none';
                 submitBtn.disabled = false;
             }
         });
