@@ -90,6 +90,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
         }
 
         .logo {
@@ -104,6 +105,45 @@
         .logo-separator {
             color: #ff6b35;
             margin: 0 2px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 25px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-sm);
+            animation: slideIn 0.5s ease;
+            z-index: 10;
+        }
+
+        .user-name {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-name::before {
+            content: '👤';
+            font-size: 1.1rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .nav-links {
@@ -138,6 +178,22 @@
 
         .nav-link:hover::after {
             width: 100%;
+        }
+
+        .nav-link.hidden {
+            display: none !important;
+        }
+
+        .nav-link.logout-btn {
+            background: transparent !important;
+            color: var(--text-medium) !important;
+            border: none !important;
+            padding: 0.75rem 1.5rem !important;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link.logout-btn:hover {
+            color: var(--primary-color) !important;
         }
 
         .nav-cta {
@@ -612,6 +668,14 @@
                 display: block;
             }
 
+            .user-info {
+                position: static;
+                transform: none;
+                margin: 0.5rem 0;
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
             .hero h1 {
                 font-size: 2.5rem;
             }
@@ -668,11 +732,15 @@
             <a href="#inicio" class="logo">
                 Lyn<span class="logo-separator">k</span>argo
             </a>
+            <div id="userInfo" class="user-info" style="display: none;">
+                <span class="user-name" id="userName"></span>
+            </div>
             <ul class="nav-links">
                 <li><a href="#inicio" class="nav-link">Inicio</a></li>
                 <li><a href="#que-es" class="nav-link">Qué es</a></li>
                 <li><a href="#caracteristicas" class="nav-link">Características</a></li>
                 <li><a href="#contacto" class="nav-link">Contacto</a></li>
+                <li><a href="#" class="nav-link" id="btnIniciarSesion">Iniciar Sesión</a></li>
                 <li><a href="#" class="nav-cta" id="btnCrearCuenta">Crea tu cuenta</a></li>
             </ul>
             <button class="mobile-menu-button" id="mobileMenuBtn">
@@ -1118,6 +1186,22 @@
                 trackEvent('nav_click', { destination: this.getAttribute('href') });
             });
         });
+
+        // Inicializar estado de autenticación
+        checkAuthState();
+
+        // Escuchar cambios en la autenticación
+        supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_IN') {
+                currentUser = session.user;
+                await loadUserProfile();
+                updateUIForAuthenticatedUser();
+            } else if (event === 'SIGNED_OUT') {
+                currentUser = null;
+                userProfile = null;
+                updateUIForUnauthenticatedUser();
+            }
+        });
     </script>
 
     <!-- Supabase -->
@@ -1163,6 +1247,30 @@
             </form>
             
             <div id="mensaje" class="mensaje" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Modal de Inicio de Sesión -->
+    <div id="loginModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Iniciar Sesión</h2>
+            
+            <form id="loginForm" class="registro-form">
+                <div class="form-group">
+                    <label for="loginEmail">Correo electrónico *</label>
+                    <input type="email" id="loginEmail" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword">Contraseña *</label>
+                    <input type="password" id="loginPassword" name="password" required>
+                </div>
+                
+                <button type="submit" class="btn-registro">Iniciar Sesión</button>
+            </form>
+            
+            <div id="loginMensaje" class="mensaje" style="display: none;"></div>
         </div>
     </div>
 
@@ -1302,6 +1410,10 @@
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // Variables globales para la UI
+        let currentUser = null;
+        let userProfile = null;
+
         // Modal de registro
         const modal = document.getElementById('registroModal');
         const btnRegistro = document.getElementById('btnCrearCuenta');
@@ -1309,28 +1421,140 @@
         const form = document.getElementById('registroForm');
         const mensaje = document.getElementById('mensaje');
 
-        // Abrir modal
+        // Modal de login
+        const loginModal = document.getElementById('loginModal');
+        const btnLogin = document.getElementById('btnIniciarSesion');
+        const loginForm = document.getElementById('loginForm');
+        const loginMensaje = document.getElementById('loginMensaje');
+
+        // Elementos de UI
+        const userInfo = document.getElementById('userInfo');
+        const userName = document.getElementById('userName');
+
+        // Función para verificar el estado de autenticación
+        async function checkAuthState() {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    currentUser = user;
+                    await loadUserProfile();
+                    updateUIForAuthenticatedUser();
+                } else {
+                    updateUIForUnauthenticatedUser();
+                }
+            } catch (error) {
+                console.error('Error al verificar autenticación:', error);
+                updateUIForUnauthenticatedUser();
+            }
+        }
+
+        // Función para cargar el perfil del usuario
+        async function loadUserProfile() {
+            try {
+                const { data, error } = await supabase
+                    .from('cuentas')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
+                
+                if (error) throw error;
+                userProfile = data;
+            } catch (error) {
+                console.error('Error al cargar perfil:', error);
+            }
+        }
+
+        // Función para actualizar UI cuando el usuario está autenticado
+        function updateUIForAuthenticatedUser() {
+            // Mostrar información del usuario
+            userInfo.style.display = 'flex';
+            userName.textContent = userProfile?.nombre || currentUser.email;
+            
+            // Cambiar botón de crear cuenta por cerrar sesión
+            btnRegistro.textContent = 'Cerrar Sesión';
+            btnRegistro.classList.remove('nav-cta');
+            btnRegistro.classList.add('nav-link', 'logout-btn');
+            
+            // Ocultar botón de iniciar sesión
+            btnLogin.classList.add('hidden');
+        }
+
+        // Función para actualizar UI cuando el usuario no está autenticado
+        function updateUIForUnauthenticatedUser() {
+            // Ocultar información del usuario
+            userInfo.style.display = 'none';
+            
+            // Restaurar botón de crear cuenta
+            btnRegistro.textContent = 'Crea tu cuenta';
+            btnRegistro.classList.remove('nav-link', 'logout-btn');
+            btnRegistro.classList.add('nav-cta');
+            
+            // Mostrar botón de iniciar sesión
+            btnLogin.classList.remove('hidden');
+        }
+
+        // Función para cerrar sesión
+        async function signOut() {
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
+                
+                currentUser = null;
+                userProfile = null;
+                updateUIForUnauthenticatedUser();
+                
+                // Cerrar modales si están abiertos
+                modal.style.display = 'none';
+                loginModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                
+                showNotification('Sesión cerrada exitosamente', 'success');
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+                showNotification('Error al cerrar sesión', 'error');
+            }
+        }
+
+        // Abrir modal de registro
         btnRegistro.addEventListener('click', function(e) {
             e.preventDefault();
-            modal.style.display = 'block';
+            if (currentUser) {
+                // Si el usuario está autenticado, cerrar sesión
+                signOut();
+            } else {
+                // Si no está autenticado, abrir modal de registro
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+        });
+
+        // Abrir modal de login
+        btnLogin.addEventListener('click', function(e) {
+            e.preventDefault();
+            loginModal.style.display = 'block';
             document.body.style.overflow = 'hidden';
         });
 
-        // Cerrar modal
+        // Cerrar modales
         closeBtn.addEventListener('click', function() {
             modal.style.display = 'none';
+            loginModal.style.display = 'none';
             document.body.style.overflow = 'auto';
         });
 
-        // Cerrar modal al hacer clic fuera
+        // Cerrar modales al hacer clic fuera
         window.addEventListener('click', function(e) {
             if (e.target === modal) {
                 modal.style.display = 'none';
                 document.body.style.overflow = 'auto';
             }
+            if (e.target === loginModal) {
+                loginModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
         });
 
-        // Manejar envío del formulario
+        // Manejar envío del formulario de registro
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -1438,10 +1662,84 @@
             }
         });
 
+        // Manejar envío del formulario de login
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(loginForm);
+            const email = formData.get('email');
+            const password = formData.get('password');
+
+            // Validaciones
+            if (!email || !password) {
+                mostrarLoginMensaje('Por favor completa todos los campos', 'error');
+                return;
+            }
+
+            // Mostrar loading
+            mostrarLoginMensaje('Iniciando sesión...', 'loading');
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+
+            try {
+                // Iniciar sesión en Supabase
+                const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (authError) {
+                    throw new Error(authError.message);
+                }
+
+                if (!authData.user) {
+                    throw new Error('No se pudo iniciar sesión');
+                }
+
+                // Actualizar estado global
+                currentUser = authData.user;
+                await loadUserProfile();
+                
+                // Actualizar UI
+                updateUIForAuthenticatedUser();
+                
+                // Cerrar modal
+                loginModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                
+                // Limpiar formulario
+                loginForm.reset();
+                
+                showNotification('¡Sesión iniciada exitosamente!', 'success');
+
+            } catch (error) {
+                console.error('Error al iniciar sesión:', error);
+                let mensajeError = 'Error al iniciar sesión';
+                
+                if (error.message.includes('Invalid login credentials')) {
+                    mensajeError = 'Correo o contraseña incorrectos';
+                } else if (error.message.includes('Email not confirmed')) {
+                    mensajeError = 'Por favor confirma tu correo electrónico';
+                } else {
+                    mensajeError = error.message;
+                }
+                
+                mostrarLoginMensaje(mensajeError, 'error');
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+
         function mostrarMensaje(texto, tipo) {
             mensaje.textContent = texto;
             mensaje.className = `mensaje ${tipo}`;
             mensaje.style.display = 'block';
+        }
+
+        function mostrarLoginMensaje(texto, tipo) {
+            loginMensaje.textContent = texto;
+            loginMensaje.className = `mensaje ${tipo}`;
+            loginMensaje.style.display = 'block';
         }
     </script>
 
