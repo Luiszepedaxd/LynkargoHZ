@@ -107,7 +107,10 @@ export default function RegistroPage() {
 
       if (authError) throw authError
 
-      if (authData.user) {
+      if (authData.user && authData.user.id) {
+        // Esperar un momento para asegurar que el usuario esté completamente creado
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        
         // 2. Insertar datos en la tabla cuentas
         const { error: dbError } = await supabase
           .from('cuentas')
@@ -119,7 +122,16 @@ export default function RegistroPage() {
             tipo_usuario: formData.tipo_usuario
           })
 
-        if (dbError) throw dbError
+        if (dbError) {
+          console.error('Error al insertar en cuentas:', dbError)
+          // Si falla la inserción en cuentas, intentar eliminar el usuario de auth
+          try {
+            await supabase.auth.admin.deleteUser(authData.user.id)
+          } catch (cleanupError) {
+            console.error('Error al limpiar usuario:', cleanupError)
+          }
+          throw new Error('Error al guardar los datos del usuario en la base de datos')
+        }
 
         setSuccess(true)
         // Limpiar formulario
@@ -130,6 +142,8 @@ export default function RegistroPage() {
           nombre_empresa: '',
           tipo_usuario: 'cliente'
         })
+      } else {
+        throw new Error('No se pudo crear el usuario correctamente')
       }
     } catch (error: any) {
       console.error('Error en registro:', error)
