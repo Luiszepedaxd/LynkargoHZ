@@ -1143,6 +1143,11 @@
                 transition: transform 0.3s ease;
                 max-width: 300px;
                 box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.5rem;
             `;
             
             // Set background color based on type
@@ -1154,21 +1159,66 @@
                 notification.style.background = '#3b82f6';
             }
             
-            notification.textContent = message;
+            // Create message text
+            const messageText = document.createElement('span');
+            messageText.textContent = message;
+            messageText.style.flex = '1';
+            
+            // Create close button (X)
+            const closeBtn = document.createElement('span');
+            closeBtn.innerHTML = '&times;';
+            closeBtn.style.cssText = `
+                font-size: 1.2rem;
+                font-weight: bold;
+                cursor: pointer;
+                opacity: 0.8;
+                transition: opacity 0.2s ease;
+                user-select: none;
+            `;
+            
+            closeBtn.addEventListener('mouseenter', () => {
+                closeBtn.style.opacity = '1';
+            });
+            
+            closeBtn.addEventListener('mouseleave', () => {
+                closeBtn.style.opacity = '0.8';
+            });
+            
+            // Add elements to notification
+            notification.appendChild(messageText);
+            notification.appendChild(closeBtn);
             document.body.appendChild(notification);
+            
+            // Function to close notification
+            const closeNotification = () => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            };
+            
+            // Close button click event
+            closeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeNotification();
+            });
+            
+            // Click on notification to close
+            notification.addEventListener('click', closeNotification);
             
             // Animate in
             setTimeout(() => {
                 notification.style.transform = 'translateX(0)';
             }, 100);
             
-            // Remove after 5 seconds
+            // Auto-remove after 3 seconds (reduced from 5)
             setTimeout(() => {
-                notification.style.transform = 'translateX(100%)';
-                setTimeout(() => {
-                    document.body.removeChild(notification);
-                }, 300);
-            }, 5000);
+                if (document.body.contains(notification)) {
+                    closeNotification();
+                }
+            }, 3000);
         }
 
         // Animate elements on scroll
