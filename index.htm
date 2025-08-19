@@ -1520,9 +1520,8 @@
 
         // Función para actualizar UI cuando el usuario está autenticado
         function updateUIForAuthenticatedUser() {
-            // Mostrar información del usuario
-            userInfo.style.display = 'flex';
-            userName.textContent = userProfile?.nombre || 'Usuario';
+            // Ocultar información del usuario (ya no la necesitamos)
+            userInfo.style.display = 'none';
             
             // Cambiar texto de los botones manteniendo posición y estilo
             btnLogin.textContent = 'Cerrar Sesión';
