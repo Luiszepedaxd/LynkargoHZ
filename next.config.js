@@ -112,8 +112,8 @@ const nextConfig = {
     ignoreDuringBuilds: false,
   },
 
-  // Configuración de output
-  output: 'standalone',
+  // Configuración optimizada para Vercel
+  // output: 'standalone', // Removido para compatibilidad con Vercel
 
   // Configuración de trailing slash
   trailingSlash: false,
