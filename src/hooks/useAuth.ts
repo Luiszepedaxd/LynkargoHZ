@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useCallback } from 'react'
 import { useAuthStore } from '@/stores/authStore'
 import { supabase } from '@/lib/supabase'
 import type { UserProfile, AuthUser } from '@/lib/supabase'
@@ -46,7 +46,7 @@ export function useAuth() {
   }
 
   // Cargar perfil del usuario
-  const loadUserProfile = async (userId: string) => {
+  const loadUserProfile = useCallback(async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from('cuentas')
@@ -59,7 +59,7 @@ export function useAuth() {
     } catch (error) {
       console.error('Error al cargar perfil:', error)
     }
-  }
+  }, [setProfile])
 
   // Iniciar sesión
   const login = async (email: string, password: string) => {

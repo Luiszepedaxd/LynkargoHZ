@@ -101,7 +101,7 @@ export default function TestingTools({ isDevelopment = process.env.NODE_ENV === 
     }
   }, [isDevelopment])
 
-  const addLog = (message: string, type: 'log' | 'error' | 'warn') => {
+  const addLog = (message: string) => {
     setLogs(prev => [...prev.slice(-99), `${new Date().toLocaleTimeString()} ${message}`])
   }
 

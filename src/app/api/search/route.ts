@@ -49,7 +49,41 @@ export async function GET(request: NextRequest) {
       limit
     })
 
-    let results: { proveedores?: any[]; servicios?: any[]; ordenes?: any[] } = {}
+    let results: { 
+      proveedores?: Array<{
+        id: string;
+        nombre: string;
+        descripcion?: string;
+        calificacion: number;
+        user: { id: string; nombre: string; email: string };
+        servicios: Array<{ id: string; nombre: string; precio?: number }>;
+        ubicaciones: Array<{ id: string; ciudad: string; estado: string }>;
+        _count: { orders: number; reviews: number };
+      }>;
+      servicios?: Array<{
+        id: string;
+        nombre: string;
+        descripcion?: string;
+        precio?: number;
+        provider: {
+          id: string;
+          nombre: string;
+          user: { id: string; nombre: string; email: string };
+          ubicaciones: Array<{ id: string; ciudad: string; estado: string }>;
+        };
+      }>;
+      ubicaciones?: Array<{
+        id: string;
+        ciudad: string;
+        estado: string;
+        provider: {
+          id: string;
+          nombre: string;
+          user: { id: string; nombre: string; email: string };
+          servicios: Array<{ id: string; nombre: string; precio?: number }>;
+        };
+      }>;
+    } = {}
     let total = 0
 
     // Búsqueda por tipo específico
@@ -123,7 +157,11 @@ export async function GET(request: NextRequest) {
       total = providerCount
 
     } else if (tipo === 'SERVICIO') {
-      const where: any = {
+      const where: {
+        activo: boolean;
+        OR: Array<{ nombre: { contains: string; mode: 'insensitive' }; descripcion: { contains: string; mode: 'insensitive' } }>;
+        precio?: { gte?: number; lte?: number };
+      } = {
         activo: true,
         OR: [
           { nombre: { contains: query, mode: 'insensitive' } },
@@ -167,7 +205,12 @@ export async function GET(request: NextRequest) {
       total = serviceCount
 
     } else if (tipo === 'UBICACION') {
-      const where: any = {
+      const where: {
+        activo: boolean;
+        OR: Array<{ ciudad: { contains: string; mode: 'insensitive' }; estado: { contains: string; mode: 'insensitive' } }>;
+        ciudad?: { contains: string; mode: 'insensitive' };
+        estado?: { contains: string; mode: 'insensitive' };
+      } = {
         activo: true,
         OR: [
           { ciudad: { contains: query, mode: 'insensitive' } },
