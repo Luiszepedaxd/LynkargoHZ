@@ -6,10 +6,43 @@ import type { UserProfile, AuthUser } from '@/lib/supabase'
 export function useAuth() {
   const { currentUser, userProfile, setUser, setProfile, setLoading } = useAuthStore()
 
+  // Cargar perfil del usuario
+  const loadUserProfile = useCallback(async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('cuentas')
+        .select('*')
+        .eq('id', userId)
+        .single()
+
+      if (error) throw error
+      setProfile(data as UserProfile)
+    } catch (error) {
+      console.error('Error al cargar perfil:', error)
+    }
+  }, [setProfile])
+
+  // Verificar estado de autenticación
+  const checkAuthState = useCallback(async () => {
+    try {
+      setLoading(true)
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (user) {
+        setUser(user as AuthUser)
+        await loadUserProfile(user.id)
+      }
+    } catch (error) {
+      console.error('Error al verificar autenticación:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [setUser, setLoading, loadUserProfile])
+
   // Verificar estado de autenticación al cargar
   useEffect(() => {
     checkAuthState()
-  }, [])
+  }, [checkAuthState])
 
   // Escuchar cambios en la autenticación
   useEffect(() => {
@@ -27,39 +60,6 @@ export function useAuth() {
 
     return () => subscription.unsubscribe()
   }, [setUser, setProfile, loadUserProfile])
-
-  // Verificar estado de autenticación
-  const checkAuthState = async () => {
-    try {
-      setLoading(true)
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (user) {
-        setUser(user as AuthUser)
-        await loadUserProfile(user.id)
-      }
-    } catch (error) {
-      console.error('Error al verificar autenticación:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // Cargar perfil del usuario
-  const loadUserProfile = useCallback(async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('cuentas')
-        .select('*')
-        .eq('id', userId)
-        .single()
-
-      if (error) throw error
-      setProfile(data as UserProfile)
-    } catch (error) {
-      console.error('Error al cargar perfil:', error)
-    }
-  }, [setProfile])
 
   // Iniciar sesión
   const login = async (email: string, password: string) => {

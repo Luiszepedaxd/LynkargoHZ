@@ -53,18 +53,18 @@ export async function GET(request: NextRequest) {
       proveedores?: Array<{
         id: string;
         nombre: string;
-        descripcion?: string;
+        descripcion?: string | null;
         calificacion: number;
         user: { id: string; nombre: string; email: string };
-        servicios: Array<{ id: string; nombre: string; precio?: number }>;
+        servicios: Array<{ id: string; nombre: string; precio?: number | null }>;
         ubicaciones: Array<{ id: string; ciudad: string; estado: string }>;
         _count: { orders: number; reviews: number };
       }>;
       servicios?: Array<{
         id: string;
         nombre: string;
-        descripcion?: string;
-        precio?: number;
+        descripcion?: string | null;
+        precio?: number | null;
         provider: {
           id: string;
           nombre: string;
@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
           id: string;
           nombre: string;
           user: { id: string; nombre: string; email: string };
-          servicios: Array<{ id: string; nombre: string; precio?: number }>;
+          servicios: Array<{ id: string; nombre: string; precio?: number | null }>;
         };
       }>;
     } = {}
@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
     if (tipo === 'PROVEEDOR') {
       const where: {
         activo: boolean;
-        OR: Array<{ nombre: { contains: string; mode: 'insensitive' }; descripcion: { contains: string; mode: 'insensitive' } }>;
+        OR: Array<{ nombre?: { contains: string; mode: 'insensitive' }; descripcion?: { contains: string; mode: 'insensitive' } }>;
         ubicaciones?: { some: { ciudad?: { contains: string; mode: 'insensitive' }; estado?: { contains: string; mode: 'insensitive' } } };
         servicios?: { some: { nombre: { contains: string; mode: 'insensitive' } } };
         calificacion?: { gte: number };
@@ -159,7 +159,7 @@ export async function GET(request: NextRequest) {
     } else if (tipo === 'SERVICIO') {
       const where: {
         activo: boolean;
-        OR: Array<{ nombre: { contains: string; mode: 'insensitive' }; descripcion: { contains: string; mode: 'insensitive' } }>;
+        OR: Array<{ nombre?: { contains: string; mode: 'insensitive' }; descripcion?: { contains: string; mode: 'insensitive' } }>;
         precio?: { gte?: number; lte?: number };
       } = {
         activo: true,
@@ -207,7 +207,7 @@ export async function GET(request: NextRequest) {
     } else if (tipo === 'UBICACION') {
       const where: {
         activo: boolean;
-        OR: Array<{ ciudad: { contains: string; mode: 'insensitive' }; estado: { contains: string; mode: 'insensitive' } }>;
+        OR: Array<{ ciudad?: { contains: string; mode: 'insensitive' }; estado?: { contains: string; mode: 'insensitive' } }>;
         ciudad?: { contains: string; mode: 'insensitive' };
         estado?: { contains: string; mode: 'insensitive' };
       } = {
@@ -274,6 +274,12 @@ export async function GET(request: NextRequest) {
             },
             ubicaciones: {
               where: { activo: true }
+            },
+            _count: {
+              select: {
+                orders: true,
+                reviews: true
+              }
             }
           },
           take: Math.ceil(limit / 3),
@@ -296,6 +302,9 @@ export async function GET(request: NextRequest) {
                     nombre: true,
                     email: true
                   }
+                },
+                ubicaciones: {
+                  where: { activo: true }
                 }
               }
             }
@@ -320,6 +329,9 @@ export async function GET(request: NextRequest) {
                     nombre: true,
                     email: true
                   }
+                },
+                servicios: {
+                  where: { activo: true }
                 }
               }
             }

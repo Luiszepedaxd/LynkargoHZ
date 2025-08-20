@@ -40,13 +40,14 @@ export default function TestingTools({ isDevelopment = process.env.NODE_ENV === 
         timestamp: new Date().toISOString()
       }
       setErrors(prev => [...prev, error])
-      addLog(`❌ Error: ${event.message}`, 'error')
+      addLog(`❌ Error: ${event.message}`)
     }
 
     // Capturar errores de recursos
     const handleResourceError = (event: Event) => {
-      const target = event.target as HTMLImageElement | HTMLScriptElement
-      addLog(`❌ Resource Error: ${target.src || target.href}`, 'error')
+      const target = event.target as HTMLElement
+      const src = (target as HTMLImageElement).src || (target as HTMLAnchorElement).href || 'unknown'
+      addLog(`❌ Resource Error: ${src}`)
     }
 
     // Capturar logs de consola
@@ -56,17 +57,17 @@ export default function TestingTools({ isDevelopment = process.env.NODE_ENV === 
 
     console.log = (...args) => {
       originalLog.apply(console, args)
-      addLog(`📝 ${args.join(' ')}`, 'log')
+      addLog(`📝 ${args.join(' ')}`)
     }
 
     console.error = (...args) => {
       originalError.apply(console, args)
-      addLog(`❌ ${args.join(' ')}`, 'error')
+      addLog(`❌ ${args.join(' ')}`)
     }
 
     console.warn = (...args) => {
       originalWarn.apply(console, args)
-      addLog(`⚠️ ${args.join(' ')}`, 'warn')
+      addLog(`⚠️ ${args.join(' ')}`)
     }
 
     // Capturar performance
@@ -110,23 +111,23 @@ export default function TestingTools({ isDevelopment = process.env.NODE_ENV === 
 
   const testAPI = async (endpoint: string) => {
     try {
-      const start = performance.now()
+      const start = window.performance.now()
       const response = await fetch(endpoint)
-      const end = performance.now()
+      const end = window.performance.now()
       const duration = Math.round(end - start)
       
       if (response.ok) {
-        addLog(`✅ ${endpoint} - ${response.status} (${duration}ms)`, 'log')
+        addLog(`✅ ${endpoint} - ${response.status} (${duration}ms)`)
       } else {
-        addLog(`❌ ${endpoint} - ${response.status} (${duration}ms)`, 'error')
+        addLog(`❌ ${endpoint} - ${response.status} (${duration}ms)`)
       }
     } catch {
-      addLog(`❌ ${endpoint} - Error de conexión`, 'error')
+      addLog(`❌ ${endpoint} - Error de conexión`)
     }
   }
 
   const runAllTests = async () => {
-    addLog('🧪 Iniciando tests automáticos...', 'log')
+    addLog('🧪 Iniciando tests automáticos...')
     
     const endpoints = [
       '/api/newsletter',
@@ -141,7 +142,7 @@ export default function TestingTools({ isDevelopment = process.env.NODE_ENV === 
       await new Promise(resolve => setTimeout(resolve, 100)) // Delay entre tests
     }
     
-    addLog('🎯 Tests completados', 'log')
+    addLog('🎯 Tests completados')
   }
 
   const exportLogs = () => {

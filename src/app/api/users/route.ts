@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import type { PrismaClient, UserType } from '@prisma/client'
 
 // Schema de validación para crear usuario
 const createUserSchema = z.object({
@@ -52,14 +53,14 @@ export async function GET(request: NextRequest) {
 
     // Construir filtros
     const where: {
-      tipo?: string;
+      tipo?: UserType;
       OR?: Array<{
-        nombre: { contains: string; mode: 'insensitive' };
-        email: { contains: string; mode: 'insensitive' };
-        empresa: { contains: string; mode: 'insensitive' };
+        nombre?: { contains: string; mode: 'insensitive' };
+        email?: { contains: string; mode: 'insensitive' };
+        empresa?: { contains: string; mode: 'insensitive' };
       }>;
     } = {}
-    if (tipo) where.tipo = tipo
+    if (tipo) where.tipo = tipo as UserType
     if (search) {
       where.OR = [
         { nombre: { contains: search, mode: 'insensitive' } },
@@ -129,7 +130,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Crear usuario con transacción
-    const newUser = await prisma.$transaction(async (tx) => {
+    const newUser = await prisma.$transaction(async (tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>) => {
       const user = await tx.user.create({
         data: {
           email: validatedData.email,

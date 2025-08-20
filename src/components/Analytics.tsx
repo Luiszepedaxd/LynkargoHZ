@@ -183,11 +183,13 @@ export function PerformanceTracking() {
           for (const entry of list.getEntries()) {
             if (entry.entryType === 'layout-shift') {
               const cls = (entry as PerformanceEntry & { value?: number }).value
-              event({
-                action: 'layout_shift',
-                category: 'performance',
-                value: Math.round(cls * 1000) / 1000,
-              })
+              if (cls !== undefined) {
+                event({
+                  action: 'layout_shift',
+                  category: 'performance',
+                  value: Math.round(cls * 1000) / 1000,
+                })
+              }
             }
           }
         })
@@ -200,7 +202,8 @@ export function PerformanceTracking() {
         const observer = new PerformanceObserver((list) => {
           for (const entry of list.getEntries()) {
             if (entry.entryType === 'first-input') {
-              const fid = entry.processingStart - entry.startTime
+              const fidEntry = entry as PerformanceEntry & { processingStart: number; startTime: number }
+              const fid = fidEntry.processingStart - fidEntry.startTime
               event({
                 action: 'first_input_delay',
                 category: 'performance',

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import type { NotificationType } from '@prisma/client'
 
 // Schema de validación para crear notificación
 const createNotificationSchema = z.object({
@@ -32,8 +33,8 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit
 
     // Construir filtros
-    const where: { userId: string; tipo?: string; leida?: boolean } = { userId }
-    if (tipo) where.tipo = tipo
+    const where: { userId: string; tipo?: NotificationType; leida?: boolean } = { userId }
+    if (tipo) where.tipo = tipo as NotificationType
     if (leida !== null) where.leida = leida === 'true'
 
     // Obtener notificaciones con paginación

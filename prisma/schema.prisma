@@ -22,6 +22,7 @@ model User {
 
   // Relaciones
   profile   UserProfile?
+  provider  Provider?
   orders    Order[]
   reviews   Review[]
   notifications Notification[]

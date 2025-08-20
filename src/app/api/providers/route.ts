@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import type { PrismaClient } from '@prisma/client'
 
 // Schema de validación para crear proveedor
 const createProviderSchema = z.object({
@@ -43,7 +44,7 @@ export async function GET(request: NextRequest) {
       activo: boolean;
       ubicaciones?: { some: { ciudad?: { contains: string; mode: 'insensitive' }; estado?: { contains: string; mode: 'insensitive' } } };
       servicios?: { some: { nombre: { contains: string; mode: 'insensitive' } } };
-      OR?: Array<{ nombre: { contains: string; mode: 'insensitive' }; descripcion: { contains: string; mode: 'insensitive' } }>;
+      OR?: Array<{ nombre?: { contains: string; mode: 'insensitive' }; descripcion?: { contains: string; mode: 'insensitive' } }>;
     } = { activo: true }
     
     if (ciudad || estado) {
@@ -158,7 +159,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Crear proveedor con transacción
-    const newProvider = await prisma.$transaction(async (tx) => {
+    const newProvider = await prisma.$transaction(async (tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>) => {
       const provider = await tx.provider.create({
         data: {
           userId: validatedData.userId,

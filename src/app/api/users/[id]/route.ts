@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import type { PrismaClient } from '@prisma/client'
 
 // Schema de validación para actualizar usuario
 const updateUserSchema = z.object({
@@ -26,7 +27,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     const user = await prisma.user.findUnique({
       where: { id },
@@ -110,7 +111,7 @@ export async function PUT(
     }
     
     // Actualizar usuario con transacción
-    const updatedUser = await prisma.$transaction(async (tx) => {
+    const updatedUser = await prisma.$transaction(async (tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>) => {
       // Actualizar datos básicos del usuario
       const user = await tx.user.update({
         where: { id },

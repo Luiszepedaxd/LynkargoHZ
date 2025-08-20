@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import type { OrderStatus } from '@prisma/client'
 
 // Schema de validación para crear orden
 const createOrderSchema = z.object({
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest) {
     const where: { 
       userId?: string; 
       providerId?: string; 
-      estado?: string;
+      estado?: OrderStatus;
       OR?: Array<{
         servicio?: { contains: string; mode: 'insensitive' };
         descripcion?: { contains: string; mode: 'insensitive' };
@@ -45,7 +46,7 @@ export async function GET(request: NextRequest) {
     
     if (userId) where.userId = userId
     if (providerId) where.providerId = providerId
-    if (estado) where.estado = estado
+    if (estado) where.estado = estado as OrderStatus
     
     if (search) {
       where.OR = [
