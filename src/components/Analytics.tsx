@@ -119,7 +119,7 @@ export default function Analytics() {
 
     // Configurar gtag
     window.dataLayer = window.dataLayer || []
-    function gtag(...args: any[]) {
+    function gtag(...args: unknown[]) {
       window.dataLayer.push(args)
     }
     window.gtag = gtag
@@ -182,7 +182,7 @@ export function PerformanceTracking() {
         const observer = new PerformanceObserver((list) => {
           for (const entry of list.getEntries()) {
             if (entry.entryType === 'layout-shift') {
-              const cls = (entry as any).value
+              const cls = (entry as PerformanceEntry & { value?: number }).value
               event({
                 action: 'layout_shift',
                 category: 'performance',

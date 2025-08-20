@@ -31,7 +31,17 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit
 
     // Construir filtros
-    const where: any = {}
+    const where: { 
+      userId?: string; 
+      providerId?: string; 
+      estado?: string;
+      OR?: Array<{
+        servicio?: { contains: string; mode: 'insensitive' };
+        descripcion?: { contains: string; mode: 'insensitive' };
+        origen?: { contains: string; mode: 'insensitive' };
+        destino?: { contains: string; mode: 'insensitive' };
+      }>;
+    } = {}
     
     if (userId) where.userId = userId
     if (providerId) where.providerId = providerId

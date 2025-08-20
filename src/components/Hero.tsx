@@ -47,7 +47,7 @@ export default function Hero() {
         setMessageType('error')
         setSubmitMessage(result.message)
       }
-    } catch (error) {
+    } catch {
       setMessageType('error')
       setSubmitMessage('Hubo un error. Intenta de nuevo.')
     } finally {

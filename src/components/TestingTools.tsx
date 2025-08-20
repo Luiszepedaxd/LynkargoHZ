@@ -9,8 +9,22 @@ interface TestingToolsProps {
 export default function TestingTools({ isDevelopment = process.env.NODE_ENV === 'development' }: TestingToolsProps) {
   const [isVisible, setIsVisible] = useState(false)
   const [logs, setLogs] = useState<string[]>([])
-  const [performance, setPerformance] = useState<any>(null)
-  const [errors, setErrors] = useState<any[]>([])
+  const [performance, setPerformance] = useState<{
+    dns: number;
+    tcp: number;
+    ttfb: number;
+    domLoad: number;
+    windowLoad: number;
+    total: number;
+  } | null>(null)
+  const [errors, setErrors] = useState<Array<{
+    message: string;
+    filename: string;
+    lineno: number;
+    colno: number;
+    error: Error;
+    timestamp: string;
+  }>>([])
 
   useEffect(() => {
     if (!isDevelopment) return
@@ -106,8 +120,8 @@ export default function TestingTools({ isDevelopment = process.env.NODE_ENV === 
       } else {
         addLog(`❌ ${endpoint} - ${response.status} (${duration}ms)`, 'error')
       }
-    } catch (error) {
-      addLog(`❌ ${endpoint} - Error: ${error}`, 'error')
+    } catch {
+      addLog(`❌ ${endpoint} - Error de conexión`, 'error')
     }
   }
 

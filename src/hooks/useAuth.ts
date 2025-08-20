@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 import type { UserProfile, AuthUser } from '@/lib/supabase'
 
 export function useAuth() {
-  const { currentUser, userProfile, setUser, setProfile, setLoading, signOut } = useAuthStore()
+  const { currentUser, userProfile, setUser, setProfile, setLoading } = useAuthStore()
 
   // Verificar estado de autenticación al cargar
   useEffect(() => {
@@ -26,7 +26,7 @@ export function useAuth() {
     )
 
     return () => subscription.unsubscribe()
-  }, [setUser, setProfile])
+  }, [setUser, setProfile, loadUserProfile])
 
   // Verificar estado de autenticación
   const checkAuthState = async () => {

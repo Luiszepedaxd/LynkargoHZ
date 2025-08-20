@@ -39,7 +39,12 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit
 
     // Construir filtros
-    const where: any = { activo: true }
+    const where: {
+      activo: boolean;
+      ubicaciones?: { some: { ciudad?: { contains: string; mode: 'insensitive' }; estado?: { contains: string; mode: 'insensitive' } } };
+      servicios?: { some: { nombre: { contains: string; mode: 'insensitive' } } };
+      OR?: Array<{ nombre: { contains: string; mode: 'insensitive' }; descripcion: { contains: string; mode: 'insensitive' } }>;
+    } = { activo: true }
     
     if (ciudad || estado) {
       where.ubicaciones = {
@@ -60,7 +65,7 @@ export async function GET(request: NextRequest) {
     if (search) {
       where.OR = [
         { nombre: { contains: search, mode: 'insensitive' } },
-        { descripcion: { contains: search, mode: 'insensitive' } }
+        { descripcion: { contains: string; mode: 'insensitive' } }
       ]
     }
 

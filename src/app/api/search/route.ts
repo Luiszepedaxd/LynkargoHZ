@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     
     // Extraer parámetros de búsqueda
     const query = searchParams.get('query') || ''
-    const tipo = searchParams.get('tipo') as any
+    const tipo = searchParams.get('tipo') as string | null
     const ciudad = searchParams.get('ciudad')
     const estado = searchParams.get('estado')
     const servicio = searchParams.get('servicio')
@@ -49,12 +49,18 @@ export async function GET(request: NextRequest) {
       limit
     })
 
-    let results: any = {}
+    let results: { proveedores?: any[]; servicios?: any[]; ordenes?: any[] } = {}
     let total = 0
 
     // Búsqueda por tipo específico
     if (tipo === 'PROVEEDOR') {
-      const where: any = {
+      const where: {
+        activo: boolean;
+        OR: Array<{ nombre: { contains: string; mode: 'insensitive' }; descripcion: { contains: string; mode: 'insensitive' } }>;
+        ubicaciones?: { some: { ciudad?: { contains: string; mode: 'insensitive' }; estado?: { contains: string; mode: 'insensitive' } } };
+        servicios?: { some: { nombre: { contains: string; mode: 'insensitive' } } };
+        calificacion?: { gte: number };
+      } = {
         activo: true,
         OR: [
           { nombre: { contains: query, mode: 'insensitive' } },

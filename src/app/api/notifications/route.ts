@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit
 
     // Construir filtros
-    const where: any = { userId }
+    const where: { userId: string; tipo?: string; leida?: boolean } = { userId }
     if (tipo) where.tipo = tipo
     if (leida !== null) where.leida = leida === 'true'
 

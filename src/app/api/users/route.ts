@@ -21,23 +21,23 @@ const createUserSchema = z.object({
   }).optional()
 })
 
-// Schema de validación para actualizar usuario
-const updateUserSchema = z.object({
-  nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').optional(),
-  empresa: z.string().optional(),
-  tipo: z.enum(['CLIENTE', 'PROVEEDOR', 'ADMIN']).optional(),
-  profile: z.object({
-    telefono: z.string().optional(),
-    direccion: z.string().optional(),
-    ciudad: z.string().optional(),
-    estado: z.string().optional(),
-    codigoPostal: z.string().optional(),
-    rfc: z.string().optional(),
-    website: z.string().url().optional().or(z.literal('')),
-    descripcion: z.string().optional(),
-    logo: z.string().optional()
-  }).optional()
-})
+// Schema de validación para actualizar usuario (comentado por ahora)
+// const updateUserSchema = z.object({
+//   nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').optional(),
+//   empresa: z.string().optional(),
+//   tipo: z.enum(['CLIENTE', 'PROVEEDOR', 'ADMIN']).optional(),
+//   profile: z.object({
+//     telefono: z.string().optional(),
+//     direccion: z.string().optional(),
+//     ciudad: z.string().optional(),
+//     estado: z.string().optional(),
+//     codigoPostal: z.string().optional(),
+//     rfc: z.string().optional(),
+//     website: z.string().url().optional().or(z.literal('')),
+//     descripcion: z.string().optional(),
+//     logo: z.string().optional()
+//   }).optional()
+// })
 
 // GET - Obtener todos los usuarios
 export async function GET(request: NextRequest) {
@@ -51,7 +51,14 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit
 
     // Construir filtros
-    const where: any = {}
+    const where: {
+      tipo?: string;
+      OR?: Array<{
+        nombre: { contains: string; mode: 'insensitive' };
+        email: { contains: string; mode: 'insensitive' };
+        empresa: { contains: string; mode: 'insensitive' };
+      }>;
+    } = {}
     if (tipo) where.tipo = tipo
     if (search) {
       where.OR = [
