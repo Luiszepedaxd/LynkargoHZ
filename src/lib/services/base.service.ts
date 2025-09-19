@@ -1,6 +1,3 @@
-// ===== SERVICIO BASE ABSTRACTO =====
-// Implementa Dependency Inversion Principle
-
 import { ApiResponse, PaginationParams, ApiListResponse } from '@/types'
 
 export abstract class BaseService<T, CreateData, UpdateData> {
@@ -10,10 +7,8 @@ export abstract class BaseService<T, CreateData, UpdateData> {
     this.baseUrl = baseUrl
   }
 
-  // Método abstracto que debe ser implementado por cada servicio
   abstract getEndpoint(): string
 
-  // Métodos comunes para todas las entidades
   async getAll(params?: PaginationParams): Promise<ApiListResponse<T>> {
     const searchParams = new URLSearchParams()
     if (params?.page) searchParams.set('page', params.page.toString())
@@ -54,7 +49,6 @@ export abstract class BaseService<T, CreateData, UpdateData> {
     return response.json()
   }
 
-  // Método protegido para manejo de errores
   protected handleError(error: unknown): ApiResponse<unknown> {
     console.error(`Error in ${this.constructor.name}:`, error)
     return {
