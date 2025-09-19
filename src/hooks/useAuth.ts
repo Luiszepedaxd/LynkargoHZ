@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from 'react'
 import { useAuthStore } from '@/stores/authStore'
 import { authService } from '@/lib/factories/service.factory'
+import { supabase } from '@/lib/supabase'
 import type { UserProfile, AuthUser, LoginFormData, RegisterFormData } from '@/types'
 
 export function useAuth() {
