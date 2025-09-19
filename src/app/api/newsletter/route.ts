@@ -1,13 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { z } from 'zod'
-
-// Schema de validación para el newsletter
-const newsletterSchema = z.object({
-  email: z.string().email('Correo electrónico inválido'),
-  nombre: z.string().optional(),
-  empresa: z.string().optional()
-})
+import { newsletterSchema } from '@/lib/utils/validation.schemas'
+import {
+  successResponse,
+  errorResponse,
+  handleGenericError
+} from '@/lib/utils/api.utils'
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,13 +21,7 @@ export async function POST(request: NextRequest) {
     
     if (existingSubscriber) {
       if (existingSubscriber.activo) {
-        return NextResponse.json(
-          { 
-            success: false, 
-            message: 'Este correo ya está suscrito al newsletter' 
-          },
-          { status: 400 }
-        )
+        return errorResponse('Este correo ya está suscrito al newsletter', 400)
       } else {
         // Reactivar suscripción
         await prisma.newsletterSubscriber.update({
@@ -42,10 +34,10 @@ export async function POST(request: NextRequest) {
           }
         })
         
-        return NextResponse.json({
-          success: true,
-          message: '¡Bienvenido de vuelta! Tu suscripción ha sido reactivada.'
-        })
+        return successResponse(
+          null,
+          '¡Bienvenido de vuelta! Tu suscripción ha sido reactivada.'
+        )
       }
     }
     
@@ -58,36 +50,14 @@ export async function POST(request: NextRequest) {
       }
     })
     
-    return NextResponse.json({
-      success: true,
-      message: '¡Gracias por suscribirte! Te notificaremos cuando estemos listos.',
-      data: {
-        id: newSubscriber.id,
-        email: newSubscriber.email
-      }
-    })
+    return successResponse(
+      { id: newSubscriber.id, email: newSubscriber.email },
+      '¡Gracias por suscribirte! Te notificaremos cuando estemos listos.',
+      201
+    )
     
   } catch (error) {
-    console.error('Error en newsletter API:', error)
-    
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          message: 'Datos inválidos', 
-          errors: error.errors 
-        },
-        { status: 400 }
-      )
-    }
-    
-    return NextResponse.json(
-      { 
-        success: false, 
-        message: 'Error interno del servidor' 
-      },
-      { status: 500 }
-    )
+    return handleGenericError(error, 'POST /api/newsletter')
   }
 }
 
@@ -105,21 +75,12 @@ export async function GET() {
       orderBy: { createdAt: 'desc' }
     })
     
-    return NextResponse.json({
-      success: true,
+    return successResponse({
       data: subscribers,
       total: subscribers.length
     })
     
   } catch (error) {
-    console.error('Error obteniendo suscriptores:', error)
-    
-    return NextResponse.json(
-      { 
-        success: false, 
-        message: 'Error interno del servidor' 
-      },
-      { status: 500 }
-    )
+    return handleGenericError(error, 'GET /api/newsletter')
   }
 }

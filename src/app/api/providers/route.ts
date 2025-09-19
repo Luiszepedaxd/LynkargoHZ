@@ -1,43 +1,26 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { z } from 'zod'
 import type { PrismaClient } from '@prisma/client'
-
-// Schema de validación para crear proveedor
-const createProviderSchema = z.object({
-  userId: z.string().min(1, 'ID de usuario requerido'),
-  nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-  descripcion: z.string().optional(),
-  servicios: z.array(z.object({
-    nombre: z.string().min(2, 'Nombre del servicio requerido'),
-    descripcion: z.string().optional(),
-    precio: z.number().positive('El precio debe ser positivo').optional(),
-    unidad: z.string().optional()
-  })).optional(),
-  ubicaciones: z.array(z.object({
-    ciudad: z.string().min(2, 'Ciudad requerida'),
-    estado: z.string().min(2, 'Estado requerido'),
-    pais: z.string().default('México')
-  })).optional(),
-  documentos: z.array(z.object({
-    tipo: z.enum(['RFC', 'ACTA_CONSTITUTIVA', 'COMPROBANTE_DOMICILIO', 'SEGURO', 'LICENCIA', 'OTRO']),
-    nombre: z.string().min(2, 'Nombre del documento requerido'),
-    url: z.string().url('URL del documento inválida')
-  })).optional()
-})
+import { createProviderSchema } from '@/lib/utils/validation.schemas'
+import {
+  successResponse,
+  errorResponse,
+  paginatedResponse,
+  handleGenericError,
+  extractPaginationParams,
+  calculatePagination
+} from '@/lib/utils/api.utils'
 
 // GET - Obtener todos los proveedores
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '10')
+    const { page, limit, search } = extractPaginationParams(searchParams)
     const ciudad = searchParams.get('ciudad')
     const estado = searchParams.get('estado')
     const servicio = searchParams.get('servicio')
-    const search = searchParams.get('search')
 
-    const skip = (page - 1) * limit
+    const { skip } = calculatePagination(page, limit, 0)
 
     // Construir filtros
     const where: {
@@ -106,23 +89,11 @@ export async function GET(request: NextRequest) {
       prisma.provider.count({ where })
     ])
 
-    return NextResponse.json({
-      success: true,
-      data: providers,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit)
-      }
-    })
+    const finalPagination = calculatePagination(page, limit, total).pagination
+    return paginatedResponse(providers, finalPagination)
 
   } catch (error) {
-    console.error('Error obteniendo proveedores:', error)
-    return NextResponse.json(
-      { success: false, message: 'Error interno del servidor' },
-      { status: 500 }
-    )
+    return handleGenericError(error, 'GET /api/providers')
   }
 }
 
@@ -140,10 +111,7 @@ export async function POST(request: NextRequest) {
     })
     
     if (!existingUser) {
-      return NextResponse.json(
-        { success: false, message: 'Usuario no encontrado' },
-        { status: 404 }
-      )
+      return errorResponse('Usuario no encontrado', 404)
     }
     
     // Verificar si ya es proveedor
@@ -152,10 +120,7 @@ export async function POST(request: NextRequest) {
     })
     
     if (existingProvider) {
-      return NextResponse.json(
-        { success: false, message: 'Este usuario ya es proveedor' },
-        { status: 400 }
-      )
+      return errorResponse('Este usuario ya es proveedor', 400)
     }
     
     // Crear proveedor con transacción
@@ -201,25 +166,13 @@ export async function POST(request: NextRequest) {
       return provider
     })
     
-    return NextResponse.json({
-      success: true,
-      message: 'Proveedor creado exitosamente',
-      data: { id: newProvider.id, nombre: newProvider.nombre }
-    }, { status: 201 })
+    return successResponse(
+      { id: newProvider.id, nombre: newProvider.nombre },
+      'Proveedor creado exitosamente',
+      201
+    )
     
   } catch (error) {
-    console.error('Error creando proveedor:', error)
-    
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { success: false, message: 'Datos inválidos', errors: error.errors },
-        { status: 400 }
-      )
-    }
-    
-    return NextResponse.json(
-      { success: false, message: 'Error interno del servidor' },
-      { status: 500 }
-    )
+    return handleGenericError(error, 'POST /api/providers')
   }
 }
