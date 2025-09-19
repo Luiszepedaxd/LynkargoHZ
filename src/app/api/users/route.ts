@@ -1,55 +1,24 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { z } from 'zod'
 import type { PrismaClient, UserType } from '@prisma/client'
-
-// Schema de validación para crear usuario
-const createUserSchema = z.object({
-  email: z.string().email('Correo electrónico inválido'),
-  nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-  empresa: z.string().optional(),
-  tipo: z.enum(['CLIENTE', 'PROVEEDOR', 'ADMIN']),
-  profile: z.object({
-    telefono: z.string().optional(),
-    direccion: z.string().optional(),
-    ciudad: z.string().optional(),
-    estado: z.string().optional(),
-    codigoPostal: z.string().optional(),
-    rfc: z.string().optional(),
-    website: z.string().url().optional().or(z.literal('')),
-    descripcion: z.string().optional(),
-    logo: z.string().optional()
-  }).optional()
-})
-
-// Schema de validación para actualizar usuario (comentado por ahora)
-// const updateUserSchema = z.object({
-//   nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').optional(),
-//   empresa: z.string().optional(),
-//   tipo: z.enum(['CLIENTE', 'PROVEEDOR', 'ADMIN']).optional(),
-//   profile: z.object({
-//     telefono: z.string().optional(),
-//     direccion: z.string().optional(),
-//     ciudad: z.string().optional(),
-//     estado: z.string().optional(),
-//     codigoPostal: z.string().optional(),
-//     rfc: z.string().optional(),
-//     website: z.string().url().optional().or(z.literal('')),
-//     descripcion: z.string().optional(),
-//     logo: z.string().optional()
-//   }).optional()
-// })
+import { createUserSchema } from '@/lib/utils/validation.schemas'
+import {
+  successResponse,
+  errorResponse,
+  paginatedResponse,
+  handleGenericError,
+  extractPaginationParams,
+  calculatePagination
+} from '@/lib/utils/api.utils'
 
 // GET - Obtener todos los usuarios
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '10')
+    const { page, limit, search } = extractPaginationParams(searchParams)
     const tipo = searchParams.get('tipo')
-    const search = searchParams.get('search')
 
-    const skip = (page - 1) * limit
+    const { skip } = calculatePagination(page, limit, 0)
 
     // Construir filtros
     const where: {
@@ -60,6 +29,7 @@ export async function GET(request: NextRequest) {
         empresa?: { contains: string; mode: 'insensitive' };
       }>;
     } = {}
+    
     if (tipo) where.tipo = tipo as UserType
     if (search) {
       where.OR = [
@@ -89,23 +59,12 @@ export async function GET(request: NextRequest) {
       prisma.user.count({ where })
     ])
 
-    return NextResponse.json({
-      success: true,
-      data: users,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit)
-      }
-    })
+    const finalPagination = calculatePagination(page, limit, total).pagination
+
+    return paginatedResponse(users, finalPagination)
 
   } catch (error) {
-    console.error('Error obteniendo usuarios:', error)
-    return NextResponse.json(
-      { success: false, message: 'Error interno del servidor' },
-      { status: 500 }
-    )
+    return handleGenericError(error, 'GET /api/users')
   }
 }
 
@@ -123,10 +82,7 @@ export async function POST(request: NextRequest) {
     })
     
     if (existingUser) {
-      return NextResponse.json(
-        { success: false, message: 'Este correo ya está registrado' },
-        { status: 400 }
-      )
+      return errorResponse('Este correo ya está registrado', 400)
     }
     
     // Crear usuario con transacción
@@ -153,25 +109,13 @@ export async function POST(request: NextRequest) {
       return user
     })
     
-    return NextResponse.json({
-      success: true,
-      message: 'Usuario creado exitosamente',
-      data: { id: newUser.id, email: newUser.email }
-    }, { status: 201 })
+    return successResponse(
+      { id: newUser.id, email: newUser.email },
+      'Usuario creado exitosamente',
+      201
+    )
     
   } catch (error) {
-    console.error('Error creando usuario:', error)
-    
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { success: false, message: 'Datos inválidos', errors: error.errors },
-        { status: 400 }
-      )
-    }
-    
-    return NextResponse.json(
-      { success: false, message: 'Error interno del servidor' },
-      { status: 500 }
-    )
+    return handleGenericError(error, 'POST /api/users')
   }
 }

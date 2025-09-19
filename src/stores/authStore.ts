@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { UserProfile, AuthUser } from '@/lib/supabase'
+import { UserProfile, AuthUser } from '@/types'
 
 interface AuthState {
   // Estado

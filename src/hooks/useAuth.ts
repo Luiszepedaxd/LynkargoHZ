@@ -1,7 +1,8 @@
 import { useEffect, useCallback } from 'react'
 import { useAuthStore } from '@/stores/authStore'
+import { authService } from '@/lib/services/auth.service'
 import { supabase } from '@/lib/supabase'
-import type { UserProfile, AuthUser } from '@/lib/supabase'
+import type { UserProfile, AuthUser, LoginFormData, RegisterFormData } from '@/types'
 
 export function useAuth() {
   const { currentUser, userProfile, setUser, setProfile, setLoading } = useAuthStore()
@@ -9,14 +10,10 @@ export function useAuth() {
   // Cargar perfil del usuario
   const loadUserProfile = useCallback(async (userId: string) => {
     try {
-      const { data, error } = await supabase
-        .from('cuentas')
-        .select('*')
-        .eq('id', userId)
-        .single()
-
-      if (error) throw error
-      setProfile(data as UserProfile)
+      const response = await authService.loadUserProfile(userId)
+      if (response.success && response.data) {
+        setProfile(response.data as UserProfile)
+      }
     } catch (error) {
       console.error('Error al cargar perfil:', error)
     }
@@ -26,11 +23,11 @@ export function useAuth() {
   const checkAuthState = useCallback(async () => {
     try {
       setLoading(true)
-      const { data: { user } } = await supabase.auth.getUser()
+      const response = await authService.getCurrentUser()
       
-      if (user) {
-        setUser(user as AuthUser)
-        await loadUserProfile(user.id)
+      if (response.success && response.data) {
+        setUser(response.data)
+        await loadUserProfile(response.data.id)
       }
     } catch (error) {
       console.error('Error al verificar autenticación:', error)
@@ -65,76 +62,33 @@ export function useAuth() {
   const login = async (email: string, password: string) => {
     try {
       setLoading(true)
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      })
+      const credentials: LoginFormData = { email, password }
+      const response = await authService.login(credentials)
 
-      if (error) throw error
-      if (!data.user) throw new Error('No se pudo iniciar sesión')
+      if (!response.success) {
+        throw new Error(response.message)
+      }
 
-      setUser(data.user as AuthUser)
-      await loadUserProfile(data.user.id)
+      if (response.data) {
+        setUser(response.data)
+        await loadUserProfile(response.data.id)
+      }
     } finally {
       setLoading(false)
     }
   }
 
   // Registrar usuario
-  const register = async (userData: {
-    nombre: string
-    email: string
-    password: string
-    empresa?: string
-    tipo: 'cliente' | 'proveedor'
-  }) => {
+  const register = async (userData: RegisterFormData) => {
     try {
       setLoading(true)
-      
-      // Crear usuario en Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: userData.email,
-        password: userData.password,
-        options: {
-          data: {
-            nombre: userData.nombre,
-            nombre_empresa: userData.empresa,
-            tipo_usuario: userData.tipo
-          }
-        }
-      })
+      const response = await authService.register(userData)
 
-      if (authError) throw authError
-      if (!authData.user) throw new Error('No se pudo crear el usuario')
-
-      // Esperar un momento para que se estabilice la creación
-      await new Promise(resolve => setTimeout(resolve, 2000))
-
-      // Insertar en tabla cuentas
-      const { error: insertError } = await supabase
-        .from('cuentas')
-        .insert([
-          {
-            id: authData.user.id,
-            nombre: userData.nombre,
-            correo: userData.email,
-            nombre_empresa: userData.empresa,
-            tipo_usuario: userData.tipo
-          }
-        ])
-
-      if (insertError) {
-        // Si falla la inserción, intentar eliminar el usuario creado
-        try {
-          await supabase.auth.admin.deleteUser(authData.user.id)
-        } catch (deleteError) {
-          console.error('Error al eliminar usuario:', deleteError)
-        }
-        throw new Error('Error al guardar los datos del usuario: ' + insertError.message)
+      if (!response.success) {
+        throw new Error(response.message)
       }
 
-      // No establecer sesión automáticamente, el usuario debe confirmar email
-      return { success: true, message: 'Cuenta creada exitosamente. Revisa tu correo para confirmar.' }
+      return response
     } finally {
       setLoading(false)
     }
@@ -144,8 +98,11 @@ export function useAuth() {
   const logout = async () => {
     try {
       setLoading(true)
-      const { error } = await supabase.auth.signOut()
-      if (error) throw error
+      const response = await authService.logout()
+      
+      if (!response.success) {
+        throw new Error(response.message)
+      }
       
       setUser(null)
       setProfile(null)

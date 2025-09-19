@@ -8,7 +8,7 @@ import RegisterModal from './RegisterModal'
 import Notification from './Notification'
 
 export default function Header() {
-  const { userProfile, logout, isAuthenticated, login, register } = useAuth()
+  const { currentUser, logout, isAuthenticated, login, register } = useAuth()
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
   const [notification, setNotification] = useState<{
@@ -52,7 +52,7 @@ export default function Header() {
                   Cerrar Sesión
                 </button>
                 <span className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold">
-                  {userProfile?.nombre || 'Usuario'}
+                  {currentUser?.user_metadata?.nombre || 'Usuario'}
                 </span>
               </>
             ) : (
@@ -96,7 +96,7 @@ export default function Header() {
           try {
             const result = await register(data)
             if (result.success) {
-              setNotification({ message: result.message, type: 'success' })
+              setNotification({ message: result.message || 'Registro exitoso', type: 'success' })
             }
           } catch (error) {
             setNotification({ 
