@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { registerSchema, RegisterFormData } from '@/lib/utils/validation.schemas'
+import { useFormState } from '@/lib/utils/form.utils'
 import Modal from '@/components/ui/Modal'
 import { InputField, SelectField } from '@/components/ui/FormField'
 import Button from '@/components/ui/Button'
@@ -20,12 +20,11 @@ const userTypeOptions = [
 ]
 
 export default function RegisterModal({ isOpen, onClose, onRegister }: RegisterModalProps) {
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
+  const { isLoading, error, handleSubmit } = useFormState()
 
   const {
     register,
-    handleSubmit,
+    handleSubmit: handleFormSubmit,
     formState: { errors },
     reset
   } = useForm<RegisterFormData>({
@@ -33,22 +32,18 @@ export default function RegisterModal({ isOpen, onClose, onRegister }: RegisterM
   })
 
   const onSubmit = async (data: RegisterFormData) => {
-    try {
-      setIsLoading(true)
-      setError('')
-      await onRegister(data)
-      reset()
-      onClose()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al crear la cuenta')
-    } finally {
-      setIsLoading(false)
-    }
+    await handleSubmit(
+      () => onRegister(data),
+      () => {
+        reset()
+        onClose()
+      }
+    )
   }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Crear Cuenta">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleFormSubmit(onSubmit)} className="space-y-4">
         <InputField
           {...register('nombre')}
           type="text"

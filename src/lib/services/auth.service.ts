@@ -1,144 +1,52 @@
-import { supabase } from '@/lib/supabase'
 import { LoginFormData, RegisterFormData, AuthUser, UserProfile, ApiResponse } from '@/types'
+import { AuthProvider } from '@/lib/providers/auth.provider'
+import { NotificationProvider } from '@/lib/providers/notification.provider'
 
 export class AuthService {
+  constructor(
+    private authProvider: AuthProvider,
+    private notificationProvider: NotificationProvider
+  ) {}
+
   async login(credentials: LoginFormData): Promise<ApiResponse<AuthUser>> {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: credentials.email,
-        password: credentials.password
-      })
-
-      if (error) throw error
-      if (!data.user) throw new Error('Login failed')
-
-      return {
-        success: true,
-        message: 'Login successful',
-        data: data.user as AuthUser
-      }
-    } catch (error: unknown) {
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Login error'
-      }
+    const result = await this.authProvider.authenticate(credentials)
+    
+    if (result.success && result.data) {
+      // Enviar email de bienvenida después del login exitoso
+      await this.notificationProvider.sendWelcomeEmail(result.data.email)
     }
+    
+    return result
   }
 
   async register(userData: RegisterFormData): Promise<ApiResponse<{ message: string }>> {
-    try {
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: userData.email,
-        password: userData.password,
-        options: {
-          data: {
-            nombre: userData.nombre,
-            nombre_empresa: userData.empresa,
-            tipo_usuario: userData.tipo
-          }
-        }
-      })
-
-      if (authError) throw authError
-      if (!authData.user) throw new Error('User creation failed')
-
-      await new Promise(resolve => setTimeout(resolve, 2000))
-
-      const { error: insertError } = await supabase
-        .from('cuentas')
-        .insert([
-          {
-            id: authData.user.id,
-            nombre: userData.nombre,
-            correo: userData.email,
-            nombre_empresa: userData.empresa,
-            tipo_usuario: userData.tipo
-          }
-        ])
-
-      if (insertError) {
-        try {
-          await supabase.auth.admin.deleteUser(authData.user.id)
-        } catch (deleteError) {
-          console.error('Error deleting user:', deleteError)
-        }
-        throw new Error('Error saving user data: ' + insertError.message)
-      }
-
-      return {
-        success: true,
-        message: 'Account created successfully. Check your email to confirm.',
-        data: { message: 'User registered successfully' }
-      }
-    } catch (error: unknown) {
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Registration error'
-      }
+    const result = await this.authProvider.register(userData)
+    
+    if (result.success) {
+      // Enviar email de confirmación después del registro exitoso
+      await this.notificationProvider.sendConfirmationEmail(userData.email)
     }
+    
+    return result
   }
 
   async logout(): Promise<ApiResponse<void>> {
-    try {
-      const { error } = await supabase.auth.signOut()
-      if (error) throw error
-
-      return {
-        success: true,
-        message: 'Logout successful'
-      }
-    } catch (error: unknown) {
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Logout error'
-      }
-    }
+    return this.authProvider.logout()
   }
 
   async getCurrentUser(): Promise<ApiResponse<AuthUser>> {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (!user) {
-        return {
-          success: false,
-          message: 'No authenticated user'
-        }
-      }
-
-      return {
-        success: true,
-        data: user as AuthUser
-      }
-    } catch (error: unknown) {
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Error getting user'
-      }
-    }
+    return this.authProvider.getCurrentUser()
   }
 
   async loadUserProfile(userId: string): Promise<ApiResponse<UserProfile>> {
-    try {
-      const { data, error } = await supabase
-        .from('cuentas')
-        .select('*')
-        .eq('id', userId)
-        .single()
-
-      if (error) throw error
-
-      return {
-        success: true,
-        data
-      }
-    } catch (error: unknown) {
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'Error loading profile'
-      }
-    }
+    return this.authProvider.loadUserProfile(userId)
   }
 }
 
-export const authService = new AuthService()
+// Factory function para crear instancias con dependencias inyectadas
+export function createAuthService(
+  authProvider: AuthProvider,
+  notificationProvider: NotificationProvider
+): AuthService {
+  return new AuthService(authProvider, notificationProvider)
+}

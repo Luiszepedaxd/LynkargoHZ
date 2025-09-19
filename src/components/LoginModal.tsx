@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema, LoginFormData } from '@/lib/utils/validation.schemas'
+import { useFormState } from '@/lib/utils/form.utils'
 import Modal from '@/components/ui/Modal'
 import { InputField } from '@/components/ui/FormField'
 import Button from '@/components/ui/Button'
@@ -15,12 +15,11 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps) {
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
+  const { isLoading, error, handleSubmit } = useFormState()
 
   const {
     register,
-    handleSubmit,
+    handleSubmit: handleFormSubmit,
     formState: { errors },
     reset
   } = useForm<LoginFormData>({
@@ -28,22 +27,18 @@ export default function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps
   })
 
   const onSubmit = async (data: LoginFormData) => {
-    try {
-      setIsLoading(true)
-      setError('')
-      await onLogin(data)
-      reset()
-      onClose()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al iniciar sesión')
-    } finally {
-      setIsLoading(false)
-    }
+    await handleSubmit(
+      () => onLogin(data),
+      () => {
+        reset()
+        onClose()
+      }
+    )
   }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Iniciar Sesión">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleFormSubmit(onSubmit)} className="space-y-4">
         <InputField
           {...register('email')}
           type="email"
