@@ -26,7 +26,8 @@ export abstract class BaseRepository<T, CreateData, UpdateData> implements Repos
     if (params?.limit) searchParams.set('limit', params.limit.toString())
     if (params?.search) searchParams.set('search', params.search)
 
-    return this.httpClient.get<ApiListResponse<T>>(`${this.baseEndpoint}?${searchParams}`)
+    const response = await this.httpClient.get<T[]>(`${this.baseEndpoint}?${searchParams}`)
+    return response as ApiListResponse<T>
   }
 
   async create(data: CreateData): Promise<ApiResponse<T>> {
