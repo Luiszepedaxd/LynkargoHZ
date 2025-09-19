@@ -26,7 +26,7 @@ export class SupabaseAuthRepository implements AuthRepositoryInterface {
         'Login successful'
       )
     } catch (error) {
-      return handleServiceError(error, 'AuthRepository.signIn')
+      return handleServiceError<AuthUser>(error, 'AuthRepository.signIn')
     }
   }
 
@@ -73,7 +73,7 @@ export class SupabaseAuthRepository implements AuthRepositoryInterface {
         'Account created successfully. Check your email to confirm.'
       )
     } catch (error) {
-      return handleServiceError(error, 'AuthRepository.signUp')
+      return handleServiceError<{ message: string }>(error, 'AuthRepository.signUp')
     }
   }
 
@@ -84,7 +84,7 @@ export class SupabaseAuthRepository implements AuthRepositoryInterface {
 
       return createSuccessResponse(undefined, 'Logout successful')
     } catch (error) {
-      return handleServiceError(error, 'AuthRepository.signOut')
+      return handleServiceError<void>(error, 'AuthRepository.signOut')
     }
   }
 
@@ -93,12 +93,12 @@ export class SupabaseAuthRepository implements AuthRepositoryInterface {
       const { data: { user } } = await supabase.auth.getUser()
       
       if (!user) {
-        return handleServiceError(new NotFoundError('No authenticated user'), 'AuthRepository.getCurrentUser')
+        return handleServiceError<AuthUser>(new NotFoundError('No authenticated user'), 'AuthRepository.getCurrentUser')
       }
 
       return createSuccessResponse(user as AuthUser)
     } catch (error) {
-      return handleServiceError(error, 'AuthRepository.getCurrentUser')
+      return handleServiceError<AuthUser>(error, 'AuthRepository.getCurrentUser')
     }
   }
 
@@ -114,7 +114,7 @@ export class SupabaseAuthRepository implements AuthRepositoryInterface {
 
       return createSuccessResponse(data)
     } catch (error) {
-      return handleServiceError(error, 'AuthRepository.loadUserProfile')
+      return handleServiceError<UserProfile>(error, 'AuthRepository.loadUserProfile')
     }
   }
 }

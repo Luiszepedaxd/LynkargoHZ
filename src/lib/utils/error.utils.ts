@@ -32,7 +32,7 @@ export class UnauthorizedError extends AppError {
   }
 }
 
-export function handleServiceError(error: unknown, context: string): ApiResponse<unknown> {
+export function handleServiceError<T = unknown>(error: unknown, context: string): ApiResponse<T> {
   console.error(`Error in ${context}:`, error)
   
   if (error instanceof AppError) {
@@ -40,20 +40,20 @@ export function handleServiceError(error: unknown, context: string): ApiResponse
       success: false,
       message: error.message,
       error: error.code
-    }
+    } as ApiResponse<T>
   }
   
   if (error instanceof Error) {
     return {
       success: false,
       message: error.message
-    }
+    } as ApiResponse<T>
   }
   
   return {
     success: false,
     message: 'Error interno del servidor'
-  }
+  } as ApiResponse<T>
 }
 
 export function createSuccessResponse<T>(
