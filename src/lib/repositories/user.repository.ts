@@ -1,5 +1,5 @@
 import { BaseRepository } from './base.repository'
-import { User, RegisterFormData, ApiResponse } from '@/types'
+import { User, RegisterFormData, ApiResponse, PaginationParams, ApiListResponse } from '@/types'
 
 export interface CreateUserData extends Omit<RegisterFormData, 'password'> {
   profile?: {
@@ -19,7 +19,7 @@ export type UpdateUserData = Partial<CreateUserData>
 
 export interface UserRepositoryInterface {
   findById(id: string): Promise<ApiResponse<User>>
-  findAll(params?: any): Promise<any>
+  findAll(params?: PaginationParams): Promise<ApiListResponse<User>>
   create(data: CreateUserData): Promise<ApiResponse<User>>
   update(id: string, data: UpdateUserData): Promise<ApiResponse<User>>
   delete(id: string): Promise<ApiResponse<void>>

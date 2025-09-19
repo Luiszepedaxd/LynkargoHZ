@@ -1,4 +1,4 @@
-import { User, RegisterFormData, ApiResponse, PaginationParams, ApiListResponse } from '@/types'
+import { User, ApiResponse, PaginationParams, ApiListResponse } from '@/types'
 import { UserRepositoryInterface, CreateUserData, UpdateUserData } from '@/lib/repositories/user.repository'
 
 export interface UserProvider {
