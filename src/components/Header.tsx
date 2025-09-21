@@ -94,16 +94,35 @@ export default function Header() {
         onClose={() => setIsRegisterModalOpen(false)}
         onRegister={async (data) => {
           try {
-            const result = await register(data)
+            console.log('🚀 Enviando datos de registro via API directa:', data)
+            
+            const response = await fetch('/api/auth/register', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data),
+            })
+            
+            const result = await response.json()
+            console.log('📥 Respuesta del servidor:', result)
+            
             if (result.success) {
-              setNotification({ message: result.message || 'Registro exitoso', type: 'success' })
+              setNotification({ 
+                message: result.message || 'Registro exitoso. Revisa tu email para confirmar tu cuenta.', 
+                type: 'success' 
+              })
+            } else {
+              throw new Error(result.message || 'Error en el registro')
             }
           } catch (error) {
+            console.error('💥 Error en registro:', error)
             setNotification({ 
               message: error instanceof Error ? error.message : 'Error al crear la cuenta', 
               type: 'error' 
             })
           }
+          setIsRegisterModalOpen(false)
         }}
       />
 
