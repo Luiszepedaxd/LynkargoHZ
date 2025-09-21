@@ -13,11 +13,8 @@ export class OrganizationNotificationService implements OrganizationNotification
         tipo: 'INVITATION',
         titulo: 'Invitación a organización',
         mensaje: `Has sido invitado a unirte a la organización ${memberData.organization?.nombre}`,
-        datos: {
-          organizationId: memberData.organizationId,
-          role: memberData.role,
-          memberId: memberData.id
-        }
+        accionUrl: `/organizations/${memberData.organizationId}`,
+        accionTexto: 'Ver organización'
       })
 
       return { success: true, message: 'Notificación de invitación enviada' }
@@ -39,12 +36,8 @@ export class OrganizationNotificationService implements OrganizationNotification
         tipo: 'ROLE_CHANGE',
         titulo: 'Cambio de rol en organización',
         mensaje: `Tu rol en la organización ${memberData.organization?.nombre} ha sido cambiado a ${newRole}`,
-        datos: {
-          organizationId: memberData.organizationId,
-          oldRole: memberData.role,
-          newRole,
-          memberId: memberData.id
-        }
+        accionUrl: `/organizations/${memberData.organizationId}`,
+        accionTexto: 'Ver organización'
       })
 
       return { success: true, message: 'Notificación de cambio de rol enviada' }
@@ -66,10 +59,7 @@ export class OrganizationNotificationService implements OrganizationNotification
         tipo: 'WARNING',
         titulo: 'Removido de organización',
         mensaje: `Has sido removido de la organización ${organizationName}`,
-        datos: {
-          organizationName,
-          action: 'removed'
-        }
+        accionTexto: 'Ver organizaciones'
       })
 
       return { success: true, message: 'Notificación de remoción enviada' }

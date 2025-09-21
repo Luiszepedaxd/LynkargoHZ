@@ -1,5 +1,16 @@
 import { ApiResponse } from '@/types'
 import { NotificationProvider } from '@/lib/providers/notification.provider'
+import { prisma } from '@/lib/prisma'
+
+interface CreateNotificationData {
+  userId: string
+  tipo: string
+  titulo: string
+  mensaje: string
+  accionUrl?: string
+  accionTexto?: string
+  leida?: boolean
+}
 
 export class NotificationService {
   constructor(private notificationProvider: NotificationProvider) {}
@@ -14,6 +25,29 @@ export class NotificationService {
 
   async subscribeToNewsletter(email: string): Promise<ApiResponse<void>> {
     return this.notificationProvider.subscribeToNewsletter(email)
+  }
+
+  async create(data: CreateNotificationData): Promise<ApiResponse<void>> {
+    try {
+      await prisma.notification.create({
+        data: {
+          userId: data.userId,
+          tipo: data.tipo as any,
+          titulo: data.titulo,
+          mensaje: data.mensaje,
+          accionUrl: data.accionUrl,
+          accionTexto: data.accionTexto,
+          leida: data.leida || false
+        }
+      })
+
+      return { success: true, message: 'Notificación creada exitosamente' }
+    } catch (error) {
+      return { 
+        success: false, 
+        error: 'Error al crear notificación' 
+      }
+    }
   }
 }
 

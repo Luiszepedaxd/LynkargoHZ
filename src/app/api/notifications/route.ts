@@ -9,7 +9,8 @@ const createNotificationSchema = z.object({
   tipo: z.enum(['INFO', 'SUCCESS', 'WARNING', 'ERROR', 'INVITATION', 'ROLE_CHANGE', 'ORDER_UPDATE']),
   titulo: z.string().min(2, 'Título requerido'),
   mensaje: z.string().min(5, 'Mensaje requerido'),
-  datos: z.record(z.any()).optional(),
+  accionUrl: z.string().optional(),
+  accionTexto: z.string().optional(),
   leida: z.boolean().default(false)
 })
 
@@ -95,7 +96,8 @@ export async function POST(request: NextRequest) {
         tipo: validatedData.tipo,
         titulo: validatedData.titulo,
         mensaje: validatedData.mensaje,
-        datos: validatedData.datos,
+        accionUrl: validatedData.accionUrl,
+        accionTexto: validatedData.accionTexto,
         leida: validatedData.leida
       }
     })
