@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { PrismaOrganizationRepository } from '@/lib/repositories/organization.repository'
 import { createOrganizationService } from '@/lib/services/organization.service'
 import { OrganizationNotificationService } from '@/lib/services/organization-notification.service'

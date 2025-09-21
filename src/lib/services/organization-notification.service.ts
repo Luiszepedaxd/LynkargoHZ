@@ -10,7 +10,7 @@ export class OrganizationNotificationService implements OrganizationNotification
     try {
       await this.notificationService.create({
         userId: memberData.userId,
-        tipo: 'INVITACION',
+        tipo: 'INVITATION',
         titulo: 'Invitación a organización',
         mensaje: `Has sido invitado a unirte a la organización ${memberData.organization?.nombre}`,
         datos: {
@@ -36,7 +36,7 @@ export class OrganizationNotificationService implements OrganizationNotification
     try {
       await this.notificationService.create({
         userId: memberData.userId,
-        tipo: 'SISTEMA',
+        tipo: 'ROLE_CHANGE',
         titulo: 'Cambio de rol en organización',
         mensaje: `Tu rol en la organización ${memberData.organization?.nombre} ha sido cambiado a ${newRole}`,
         datos: {
@@ -63,7 +63,7 @@ export class OrganizationNotificationService implements OrganizationNotification
     try {
       await this.notificationService.create({
         userId,
-        tipo: 'SISTEMA',
+        tipo: 'WARNING',
         titulo: 'Removido de organización',
         mensaje: `Has sido removido de la organización ${organizationName}`,
         datos: {

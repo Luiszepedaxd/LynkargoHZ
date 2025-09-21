@@ -6,7 +6,7 @@ import type { NotificationType } from '@prisma/client'
 // Schema de validación para crear notificación
 const createNotificationSchema = z.object({
   userId: z.string().min(1, 'ID de usuario requerido'),
-  tipo: z.enum(['ORDEN', 'ESTADO', 'SISTEMA', 'PROMOCION']),
+  tipo: z.enum(['INFO', 'SUCCESS', 'WARNING', 'ERROR', 'INVITATION', 'ROLE_CHANGE', 'ORDER_UPDATE']),
   titulo: z.string().min(2, 'Título requerido'),
   mensaje: z.string().min(5, 'Mensaje requerido'),
   datos: z.record(z.any()).optional(),

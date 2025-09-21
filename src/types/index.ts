@@ -118,7 +118,7 @@ export type OrganizationType = 'CLIENTE' | 'PROVEEDOR' | 'MIXTO'
 export type MemberRole = 'OWNER' | 'ADMIN' | 'MANAGER' | 'EMPLOYEE'
 export type OrderStatus = 'PENDIENTE' | 'ACEPTADA' | 'EN_PROCESO' | 'EN_TRANSITO' | 'ENTREGADA' | 'CANCELADA'
 export type DocumentType = 'RFC' | 'ACTA_CONSTITUTIVA' | 'COMPROBANTE_DOMICILIO' | 'SEGURO' | 'LICENCIA' | 'OTRO'
-export type NotificationType = 'ORDEN' | 'ESTADO' | 'SISTEMA' | 'PROMOCION' | 'INVITACION'
+export type NotificationType = 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR' | 'INVITATION' | 'ROLE_CHANGE' | 'ORDER_UPDATE'
 
 // ===== TIPOS DE FORMULARIOS =====
 
