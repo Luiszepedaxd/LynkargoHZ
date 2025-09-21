@@ -74,10 +74,10 @@ export async function GET(request: NextRequest) {
             select: {
               id: true,
               nombre: true,
-              user: {
+              descripcion: true,
+              organization: {
                 select: {
-                  nombre: true,
-                  email: true
+                  nombre: true
                 }
               }
             }
