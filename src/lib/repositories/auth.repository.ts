@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { supabase, supabaseAdmin } from '@/lib/supabase'
 import { LoginFormData, RegisterFormData, AuthUser, UserProfile, ApiResponse } from '@/types'
 import { handleServiceError, createSuccessResponse, NotFoundError } from '@/lib/utils/error.utils'
 
@@ -59,8 +59,8 @@ export class SupabaseAuthRepository implements AuthRepositoryInterface {
 
       await new Promise(resolve => setTimeout(resolve, 2000))
 
-      // Insertar usuario en la tabla users
-      const { error: userInsertError } = await supabase
+      // Insertar usuario en la tabla users usando cliente administrativo
+      const { error: userInsertError } = await supabaseAdmin
         .from('users')
         .insert([{
           id: authData.user.id,
@@ -79,8 +79,8 @@ export class SupabaseAuthRepository implements AuthRepositoryInterface {
         throw new Error('Error saving user data: ' + userInsertError.message)
       }
 
-      // Crear rol de plataforma inicial
-      const { error: roleInsertError } = await supabase
+      // Crear rol de plataforma inicial usando cliente administrativo
+      const { error: roleInsertError } = await supabaseAdmin
         .from('user_roles')
         .insert([{
           user_id: authData.user.id,
@@ -93,8 +93,8 @@ export class SupabaseAuthRepository implements AuthRepositoryInterface {
         // No fallar el registro por esto, el contexto se puede crear después
       }
 
-      // Crear contexto inicial
-      const { error: contextInsertError } = await supabase
+      // Crear contexto inicial usando cliente administrativo
+      const { error: contextInsertError } = await supabaseAdmin
         .from('user_contexts')
         .insert([{
           user_id: authData.user.id,
@@ -153,7 +153,7 @@ export class SupabaseAuthRepository implements AuthRepositoryInterface {
 
   async loadUserProfile(userId: string): Promise<ApiResponse<UserProfile>> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseAdmin
         .from('users')
         .select(`
           *,
