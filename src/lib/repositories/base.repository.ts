@@ -12,16 +12,17 @@ import {
   extractPaginationParams,
   calculatePagination 
 } from '@/lib/utils/api.utils'
+import { Prisma } from '@prisma/client'
 
 // Clase base abstracta para repositorios siguiendo principios SOLID
 export abstract class BaseRepository<T, CreateData, UpdateData, Filters = BaseSearchFilters> {
   protected abstract modelName: string
 
   // Método abstracto que debe ser implementado por las clases hijas
-  protected abstract getPrismaModel(): any
+  protected abstract getPrismaModel(): Prisma.OrganizationDelegate | Prisma.OrganizationMemberDelegate
 
   // Métodos comunes reutilizables
-  protected async findById(id: string, include?: any): Promise<BaseApiResponse<T>> {
+  protected async findById(id: string, include?: Prisma.OrganizationInclude | Prisma.OrganizationMemberInclude): Promise<BaseApiResponse<T>> {
     try {
       const model = this.getPrismaModel()
       const result = await model.findUnique({
@@ -41,11 +42,11 @@ export abstract class BaseRepository<T, CreateData, UpdateData, Filters = BaseSe
 
   protected async findMany(
     filters?: Filters, 
-    include?: any,
-    orderBy?: any
+    include?: Prisma.OrganizationInclude | Prisma.OrganizationMemberInclude,
+    orderBy?: Prisma.OrganizationOrderByWithRelationInput | Prisma.OrganizationMemberOrderByWithRelationInput
   ): Promise<BasePaginatedResponse<T>> {
     try {
-      const { page, limit, search } = extractPaginationParams(filters)
+      const { page, limit } = extractPaginationParams(filters)
       const { skip } = calculatePagination(page, limit, 0)
 
       const model = this.getPrismaModel()
@@ -72,7 +73,7 @@ export abstract class BaseRepository<T, CreateData, UpdateData, Filters = BaseSe
     }
   }
 
-  protected async create(data: CreateData, include?: any): Promise<BaseApiResponse<T>> {
+  protected async create(data: CreateData, include?: Prisma.OrganizationInclude | Prisma.OrganizationMemberInclude): Promise<BaseApiResponse<T>> {
     try {
       const model = this.getPrismaModel()
       const result = await model.create({
@@ -89,7 +90,7 @@ export abstract class BaseRepository<T, CreateData, UpdateData, Filters = BaseSe
   protected async update(
     id: string, 
     data: Partial<UpdateData>, 
-    include?: any
+    include?: Prisma.OrganizationInclude | Prisma.OrganizationMemberInclude
   ): Promise<BaseApiResponse<T>> {
     try {
       const model = this.getPrismaModel()
@@ -119,7 +120,7 @@ export abstract class BaseRepository<T, CreateData, UpdateData, Filters = BaseSe
   }
 
   // Método abstracto para construir cláusulas WHERE específicas
-  protected abstract buildWhereClause(filters?: Filters): any
+  protected abstract buildWhereClause(filters?: Filters): Prisma.OrganizationWhereInput | Prisma.OrganizationMemberWhereInput
 
   // Método para verificar existencia de un registro
   protected async exists(id: string): Promise<boolean> {
@@ -129,7 +130,7 @@ export abstract class BaseRepository<T, CreateData, UpdateData, Filters = BaseSe
         where: { id }
       })
       return count > 0
-    } catch (error) {
+    } catch {
       return false
     }
   }
@@ -140,14 +141,14 @@ export abstract class BaseRepository<T, CreateData, UpdateData, Filters = BaseSe
       const model = this.getPrismaModel()
       const where = this.buildWhereClause(filters)
       return await model.count({ where })
-    } catch (error) {
+    } catch {
       return 0
     }
   }
 
   // Método para operaciones en transacción
   protected async executeTransaction<R>(
-    callback: (tx: any) => Promise<R>
+    callback: (tx: Prisma.TransactionClient) => Promise<R>
   ): Promise<BaseApiResponse<R>> {
     try {
       const result = await prisma.$transaction(callback)

@@ -38,7 +38,7 @@ export async function GET(
     const { page, limit, search } = extractPaginationParams(searchParams)
     
     // TODO: Obtener userId del token de autenticación
-    const userId = 'temp-user-id' // Reemplazar con autenticación real
+    // const userId = 'temp-user-id' // Reemplazar con autenticación real
 
     const { organizationService } = createDependencies()
     const result = await organizationService.getOrganizationMembers(params.id, { page, limit, search })

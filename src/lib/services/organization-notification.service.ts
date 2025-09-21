@@ -21,7 +21,7 @@ export class OrganizationNotificationService implements OrganizationNotification
       })
 
       return { success: true, message: 'Notificación de invitación enviada' }
-    } catch (error) {
+    } catch {
       return { 
         success: false, 
         error: 'Error al enviar notificación de invitación' 
@@ -48,7 +48,7 @@ export class OrganizationNotificationService implements OrganizationNotification
       })
 
       return { success: true, message: 'Notificación de cambio de rol enviada' }
-    } catch (error) {
+    } catch {
       return { 
         success: false, 
         error: 'Error al enviar notificación de cambio de rol' 
@@ -73,7 +73,7 @@ export class OrganizationNotificationService implements OrganizationNotification
       })
 
       return { success: true, message: 'Notificación de remoción enviada' }
-    } catch (error) {
+    } catch {
       return { 
         success: false, 
         error: 'Error al enviar notificación de remoción' 

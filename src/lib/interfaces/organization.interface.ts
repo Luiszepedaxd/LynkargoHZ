@@ -6,7 +6,8 @@ import {
   UpdateMemberRoleData,
   BaseApiResponse,
   BasePaginatedResponse,
-  BaseSearchFilters
+  BaseSearchFilters,
+  OrganizationStats
 } from '@/types'
 
 // Interface específica para repositorio de organizaciones
@@ -25,7 +26,7 @@ export interface OrganizationRepositoryInterface {
   acceptInvitation(memberId: string, userId: string): Promise<BaseApiResponse<OrganizationMember>>
   
   // Métodos específicos para estadísticas
-  getStats(organizationId: string): Promise<BaseApiResponse<any>>
+  getStats(organizationId: string): Promise<BaseApiResponse<OrganizationStats>>
   getUserRole(userId: string, organizationId: string): Promise<BaseApiResponse<string>>
 }
 
@@ -44,7 +45,7 @@ export interface OrganizationServiceInterface {
   removeMember(memberId: string, requesterId: string): Promise<BaseApiResponse<void>>
   
   // Estadísticas y reportes
-  getOrganizationStats(organizationId: string): Promise<BaseApiResponse<any>>
+  getOrganizationStats(organizationId: string): Promise<BaseApiResponse<OrganizationStats>>
 }
 
 // Interface específica para validación de permisos de organización

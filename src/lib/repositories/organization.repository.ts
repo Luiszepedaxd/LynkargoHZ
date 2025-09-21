@@ -8,10 +8,12 @@ import {
   UpdateMemberRoleData,
   BaseApiResponse,
   BasePaginatedResponse,
-  BaseSearchFilters
+  BaseSearchFilters,
+  OrganizationStats
 } from '@/types'
 import { prisma } from '@/lib/prisma'
 import { successResponse, errorResponse, handleGenericError } from '@/lib/utils/api.utils'
+import { Prisma } from '@prisma/client'
 
 export class PrismaOrganizationRepository 
   extends BaseRepository<Organization, CreateOrganizationFormData, CreateOrganizationFormData, BaseSearchFilters>
@@ -23,8 +25,8 @@ export class PrismaOrganizationRepository
     return prisma.organization
   }
 
-  protected buildWhereClause(filters?: BaseSearchFilters): any {
-    const where: any = {}
+  protected buildWhereClause(filters?: BaseSearchFilters): Prisma.OrganizationWhereInput {
+    const where: Prisma.OrganizationWhereInput = {}
     
     if (filters?.search) {
       where.nombre = {
@@ -120,7 +122,7 @@ export class PrismaOrganizationRepository
       const { page, limit, search } = this.extractPaginationParams(filters)
       const { skip } = this.calculatePagination(page, limit, 0)
 
-      const where: any = { organizationId }
+      const where: Prisma.OrganizationMemberWhereInput = { organizationId }
       
       if (search) {
         where.user = {
@@ -324,7 +326,7 @@ export class PrismaOrganizationRepository
     }
   }
 
-  async getStats(organizationId: string): Promise<BaseApiResponse<any>> {
+  async getStats(organizationId: string): Promise<BaseApiResponse<OrganizationStats>> {
     try {
       const [
         totalMembers,
@@ -363,7 +365,7 @@ export class PrismaOrganizationRepository
         })
       ])
 
-      const stats = {
+      const stats: OrganizationStats = {
         totalMembers,
         totalProviders,
         activeProviders,
@@ -423,7 +425,7 @@ export class PrismaOrganizationRepository
     }
   }
 
-  private paginatedResponse<T>(data: T[], pagination: any) {
+  private paginatedResponse<T>(data: T[], pagination: { page: number; limit: number; total: number; pages: number }) {
     return {
       success: true,
       data,

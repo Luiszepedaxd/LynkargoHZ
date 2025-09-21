@@ -60,7 +60,7 @@ export default function OrganizationMembers({
       })
       reset()
       setShowInviteModal(false)
-    } catch (err) {
+    } catch {
       setError('Error al enviar invitación')
     } finally {
       setIsLoading(false)
@@ -71,7 +71,7 @@ export default function OrganizationMembers({
     setIsLoading(true)
     try {
       await onUpdateRole(memberId, newRole)
-    } catch (err) {
+    } catch {
       setError('Error al actualizar rol')
     } finally {
       setIsLoading(false)
@@ -86,7 +86,7 @@ export default function OrganizationMembers({
     setIsLoading(true)
     try {
       await onRemoveMember(memberId)
-    } catch (err) {
+    } catch {
       setError('Error al remover miembro')
     } finally {
       setIsLoading(false)

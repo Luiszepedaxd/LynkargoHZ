@@ -8,12 +8,14 @@ import {
   UpdateMemberRoleData,
   BaseApiResponse,
   BasePaginatedResponse,
-  BaseSearchFilters 
+  BaseSearchFilters,
+  OrganizationStats
 } from '@/types'
+import { OrganizationRepositoryInterface } from '@/lib/interfaces/organization.interface'
 
 export class OrganizationService implements OrganizationServiceInterface {
   constructor(
-    private organizationRepository: any, // Inyección de dependencia
+    private organizationRepository: OrganizationRepositoryInterface, // Inyección de dependencia
     private notificationService: OrganizationNotificationInterface
   ) {}
 
@@ -100,14 +102,14 @@ export class OrganizationService implements OrganizationServiceInterface {
     return result
   }
 
-  async getOrganizationStats(organizationId: string): Promise<BaseApiResponse<any>> {
+  async getOrganizationStats(organizationId: string): Promise<BaseApiResponse<OrganizationStats>> {
     return this.organizationRepository.getStats(organizationId)
   }
 }
 
 // Factory function para crear instancias con dependencias inyectadas
 export function createOrganizationService(
-  organizationRepository: any,
+  organizationRepository: OrganizationRepositoryInterface,
   notificationService: OrganizationNotificationInterface
 ): OrganizationService {
   return new OrganizationService(organizationRepository, notificationService)

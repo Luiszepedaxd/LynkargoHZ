@@ -173,6 +173,38 @@ export interface ApiResponse<T = unknown> {
   errors?: unknown[]
 }
 
+// Tipos específicos para estadísticas y respuestas de API
+export interface OrganizationStats {
+  totalMembers: number
+  totalProviders: number
+  activeProviders: number
+  totalOrders: number
+  pendingOrders: number
+  completedOrders: number
+  totalRevenue: number
+}
+
+export interface BaseApiResponse<T = unknown> {
+  success: boolean
+  message?: string
+  data?: T
+  error?: string
+}
+
+export interface BasePaginatedResponse<T = unknown> {
+  success: boolean
+  message?: string
+  data?: T[]
+  pagination?: PaginationResponse
+  error?: string
+}
+
+export interface BaseSearchFilters {
+  page?: number
+  limit?: number
+  search?: string
+}
+
 export interface PaginationParams {
   page?: number
   limit?: number

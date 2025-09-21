@@ -21,7 +21,7 @@ function createDependencies() {
 }
 
 // GET - Obtener organizaciones del usuario
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // TODO: Obtener userId del token de autenticación
     const userId = 'temp-user-id' // Reemplazar con autenticación real
