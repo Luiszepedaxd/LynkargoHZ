@@ -11,7 +11,7 @@ import {
   OrganizationStats
 } from '@/types'
 import { prisma } from '@/lib/prisma'
-import { createSuccessResponse, createErrorResponse, handleRepositoryError, createPaginatedResponse } from '@/lib/utils/api.utils'
+import { createSuccessResponse, createErrorResponse, handleRepositoryError, createPaginatedResponse, transformDateFields } from '@/lib/utils/api.utils'
 import { Prisma } from '@prisma/client'
 
 export class PrismaOrganizationRepository implements OrganizationRepositoryInterface {
@@ -213,7 +213,8 @@ export class PrismaOrganizationRepository implements OrganizationRepositoryInter
 
       const pagination = this.calculatePagination(page, limit, total).pagination
 
-      return createPaginatedResponse(members as unknown as OrganizationMember[], pagination)
+      const transformedMembers = members.map(member => transformDateFields(member)) as OrganizationMember[]
+      return createPaginatedResponse(transformedMembers, pagination)
     } catch (error) {
       return handleRepositoryError(error, 'OrganizationRepository.getMembers')
     }
@@ -288,7 +289,8 @@ export class PrismaOrganizationRepository implements OrganizationRepositoryInter
         }
       })
 
-      return createSuccessResponse(membership as unknown as OrganizationMember, 'Invitación enviada exitosamente')
+      const transformedMembership = transformDateFields(membership) as OrganizationMember
+      return createSuccessResponse(transformedMembership, 'Invitación enviada exitosamente')
     } catch (error) {
       return handleRepositoryError(error, 'OrganizationRepository.inviteMember')
     }
@@ -324,7 +326,8 @@ export class PrismaOrganizationRepository implements OrganizationRepositoryInter
         }
       })
 
-      return createSuccessResponse(membership, 'Rol actualizado exitosamente')
+      const transformedMembership = transformDateFields(membership) as OrganizationMember
+      return createSuccessResponse(transformedMembership, 'Rol actualizado exitosamente')
     } catch (error) {
       return handleRepositoryError(error, 'OrganizationRepository.updateMemberRole')
     }
@@ -380,7 +383,8 @@ export class PrismaOrganizationRepository implements OrganizationRepositoryInter
         }
       })
 
-      return createSuccessResponse(updatedMembership, 'Invitación aceptada exitosamente')
+      const transformedMembership = transformDateFields(updatedMembership) as OrganizationMember
+      return createSuccessResponse(transformedMembership, 'Invitación aceptada exitosamente')
     } catch (error) {
       return handleRepositoryError(error, 'OrganizationRepository.acceptInvitation')
     }
