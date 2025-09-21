@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createContextService } from '@/lib/services/context.service'
-import { createOrganizationService } from '@/lib/services/organization.service'
-import { RegisterFormData, PlatformRole } from '@/types'
 import { z } from 'zod'
 
 const contextService = createContextService()

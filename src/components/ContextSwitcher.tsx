@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { UserContext, ContextSwitchOptions, PlatformRole, Organization } from '@/types'
+import { useState } from 'react'
+import { UserContext, ContextSwitchOptions, PlatformRole } from '@/types'
 import Button from '@/components/ui/Button'
 
 interface ContextSwitcherProps {

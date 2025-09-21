@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createContextService } from '@/lib/services/context.service'
-import { createPermissionsService } from '@/lib/services/permissions.service'
-import { SwitchContextData } from '@/types'
 import { z } from 'zod'
 
 const contextService = createContextService()
-const permissionsService = createPermissionsService()
 
 // Schema de validación para cambio de contexto
 const switchContextSchema = z.object({
@@ -14,7 +11,7 @@ const switchContextSchema = z.object({
 })
 
 // GET - Obtener contexto actual y opciones de cambio
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // TODO: Obtener userId del token de autenticación
     const userId = 'temp-user-id' // Reemplazar con autenticación real

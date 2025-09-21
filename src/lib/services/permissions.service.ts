@@ -46,7 +46,7 @@ export class PermissionsService {
         success: true,
         data: permissions
       }
-    } catch (error) {
+    } catch {
       return {
         success: false,
         error: 'Error al obtener permisos del usuario'
@@ -135,7 +135,7 @@ export class PermissionsService {
       }
 
       return permissionsResult.data[action]
-    } catch (error) {
+    } catch {
       return false
     }
   }
@@ -215,7 +215,7 @@ export class PermissionsService {
         success: true,
         data: true
       }
-    } catch (error) {
+    } catch {
       return {
         success: false,
         error: 'Error al verificar permisos'
@@ -277,7 +277,7 @@ export class PermissionsService {
         success: true,
         data: availableRoles
       }
-    } catch (error) {
+    } catch {
       return {
         success: false,
         error: 'Error al obtener roles disponibles'

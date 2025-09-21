@@ -58,7 +58,7 @@ export function usePermissions(organizationId?: string): UsePermissionsReturn {
 
   useEffect(() => {
     fetchPermissions()
-  }, [organizationId])
+  }, [organizationId, fetchPermissions])
 
   return {
     permissions,

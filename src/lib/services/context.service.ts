@@ -1,6 +1,6 @@
 import { UserContext, ContextSwitchOptions, ContextValidationResult, PlatformRole, Organization } from '@/types'
 import { prisma } from '@/lib/prisma'
-import { BaseApiResponse, BasePaginatedResponse } from '@/types'
+import { BaseApiResponse } from '@/types'
 
 export class ContextService {
   
@@ -33,7 +33,7 @@ export class ContextService {
         success: true,
         data: context as UserContext
       }
-    } catch (error) {
+    } catch {
       return {
         success: false,
         error: 'Error al obtener contexto actual'
@@ -76,7 +76,7 @@ export class ContextService {
           currentContext: currentContext.data!
         }
       }
-    } catch (error) {
+    } catch {
       return {
         success: false,
         error: 'Error al obtener opciones de contexto'
@@ -129,7 +129,7 @@ export class ContextService {
         data: context as UserContext,
         message: `Contexto cambiado a ${activeRole}${activeOrganizationId ? ' en organización' : ''}`
       }
-    } catch (error) {
+    } catch {
       return {
         success: false,
         error: 'Error al cambiar contexto'
@@ -178,7 +178,7 @@ export class ContextService {
       }
 
       return { isValid: true }
-    } catch (error) {
+    } catch {
       return {
         isValid: false,
         error: 'Error al validar cambio de contexto'
@@ -215,7 +215,7 @@ export class ContextService {
         data: context as UserContext,
         message: 'Contexto inicial creado exitosamente'
       }
-    } catch (error) {
+    } catch {
       return {
         success: false,
         error: 'Error al crear contexto inicial'
@@ -238,7 +238,7 @@ export class ContextService {
         success: true,
         message: `Rol ${role} agregado exitosamente`
       }
-    } catch (error) {
+    } catch {
       return {
         success: false,
         error: 'Error al agregar rol de plataforma'
@@ -262,7 +262,7 @@ export class ContextService {
         success: true,
         message: `Rol ${role} removido exitosamente`
       }
-    } catch (error) {
+    } catch {
       return {
         success: false,
         error: 'Error al remover rol de plataforma'

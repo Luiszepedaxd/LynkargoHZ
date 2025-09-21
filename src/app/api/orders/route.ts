@@ -66,8 +66,7 @@ export async function GET(request: NextRequest) {
             select: {
               id: true,
               nombre: true,
-              email: true,
-              empresa: true
+              email: true
             }
           },
           provider: {
