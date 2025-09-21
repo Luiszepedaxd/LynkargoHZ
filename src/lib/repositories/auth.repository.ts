@@ -59,23 +59,52 @@ export class SupabaseAuthRepository implements AuthRepositoryInterface {
 
       await new Promise(resolve => setTimeout(resolve, 2000))
 
-      const { error: insertError } = await supabase
-        .from('cuentas')
+      // Insertar usuario en la tabla users
+      const { error: userInsertError } = await supabase
+        .from('users')
         .insert([{
           id: authData.user.id,
+          email: userData.email,
           nombre: userData.nombre,
-          correo: userData.email,
           telefono: userData.telefono,
-          initialRole: userData.initialRole
+          activo: true
         }])
 
-      if (insertError) {
+      if (userInsertError) {
         try {
           await supabase.auth.admin.deleteUser(authData.user.id)
         } catch (deleteError) {
           console.error('Error deleting user:', deleteError)
         }
-        throw new Error('Error saving user data: ' + insertError.message)
+        throw new Error('Error saving user data: ' + userInsertError.message)
+      }
+
+      // Crear rol de plataforma inicial
+      const { error: roleInsertError } = await supabase
+        .from('user_roles')
+        .insert([{
+          user_id: authData.user.id,
+          role: userData.initialRole,
+          activo: true
+        }])
+
+      if (roleInsertError) {
+        console.error('Error creating user role:', roleInsertError)
+        // No fallar el registro por esto, el contexto se puede crear después
+      }
+
+      // Crear contexto inicial
+      const { error: contextInsertError } = await supabase
+        .from('user_contexts')
+        .insert([{
+          user_id: authData.user.id,
+          active_role: userData.initialRole,
+          last_switched_at: new Date().toISOString()
+        }])
+
+      if (contextInsertError) {
+        console.error('Error creating user context:', contextInsertError)
+        // No fallar el registro por esto, el contexto se puede crear después
       }
 
       return createSuccessResponse(
@@ -125,8 +154,13 @@ export class SupabaseAuthRepository implements AuthRepositoryInterface {
   async loadUserProfile(userId: string): Promise<ApiResponse<UserProfile>> {
     try {
       const { data, error } = await supabase
-        .from('cuentas')
-        .select('*')
+        .from('users')
+        .select(`
+          *,
+          user_profiles(*),
+          user_roles(role, activo),
+          user_contexts(active_role, active_organization_id)
+        `)
         .eq('id', userId)
         .single()
 
