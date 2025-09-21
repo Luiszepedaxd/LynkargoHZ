@@ -16,7 +16,20 @@ import {
 // Factory function para crear dependencias
 function createDependencies() {
   const organizationRepository = new PrismaOrganizationRepository()
-  const notificationProvider = new NotificationProvider()
+  
+  // Mock notification provider para desarrollo
+  const notificationProvider: NotificationProvider = {
+    async sendWelcomeEmail() {
+      return { success: true, message: 'Mock email sent' }
+    },
+    async sendConfirmationEmail() {
+      return { success: true, message: 'Mock email sent' }
+    },
+    async subscribeToNewsletter() {
+      return { success: true, message: 'Mock email sent' }
+    }
+  }
+  
   const notificationService = new NotificationService(notificationProvider)
   const organizationNotificationService = new OrganizationNotificationService(notificationService)
   const organizationService = createOrganizationService(organizationRepository, organizationNotificationService)
