@@ -142,7 +142,7 @@ export function handleRepositoryError(error: unknown, context: string): BaseApiR
 }
 
 // Función para transformar objetos con campos Date a string
-export function transformDateFields<T extends Record<string, any>>(obj: T): T {
+export function transformDateFields<T extends Record<string, unknown>>(obj: T): T {
   if (!obj) return obj
   
   const transformed = { ...obj }
@@ -151,13 +151,13 @@ export function transformDateFields<T extends Record<string, any>>(obj: T): T {
     const value = transformed[key]
     
     if (value instanceof Date) {
-      transformed[key] = value.toISOString() as any
+      (transformed as Record<string, unknown>)[key] = value.toISOString()
     } else if (value && typeof value === 'object' && !Array.isArray(value)) {
-      transformed[key] = transformDateFields(value)
+      (transformed as Record<string, unknown>)[key] = transformDateFields(value as Record<string, unknown>)
     } else if (Array.isArray(value)) {
-      transformed[key] = value.map(item => 
-        item && typeof item === 'object' ? transformDateFields(item) : item
-      ) as any
+      (transformed as Record<string, unknown>)[key] = value.map(item => 
+        item && typeof item === 'object' ? transformDateFields(item as Record<string, unknown>) : item
+      )
     }
   }
   
