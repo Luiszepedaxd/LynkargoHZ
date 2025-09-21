@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createContextService } from '@/lib/services/context.service'
+import { supabaseAdmin } from '@/lib/supabase'
 import { z } from 'zod'
-
-const contextService = createContextService()
 
 // Schema de validación para registro
 const registerSchema = z.object({
@@ -21,54 +19,101 @@ export async function POST(request: NextRequest) {
     // Validar datos de entrada
     const validatedData = registerSchema.parse(body)
     
-    // TODO: Implementar creación de usuario con Supabase
-    // Por ahora simulamos la creación
-    const newUser = {
-      id: 'temp-user-id-' + Date.now(),
-      email: validatedData.email,
+    console.log('🔍 Iniciando registro con datos:', { 
+      email: validatedData.email, 
       nombre: validatedData.nombre,
-      telefono: validatedData.telefono,
-      activo: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }
+      role: validatedData.initialRole 
+    })
 
-    // Crear contexto inicial
-    const contextResult = await contextService.createInitialContext(
-      newUser.id,
-      validatedData.initialRole
-    )
-
-    if (!contextResult.success) {
-      return NextResponse.json(
-        { success: false, message: 'Error al crear contexto inicial' },
-        { status: 500 }
-      )
-    }
-
-    // Si el usuario se registra como proveedor, crear organización por defecto
-    let organization = null
-    if (validatedData.initialRole === 'PROVEEDOR') {
-      // TODO: Crear organización por defecto para proveedores
-      organization = {
-        id: 'temp-org-id-' + Date.now(),
-        nombre: `${validatedData.nombre} - Servicios`,
-        tipo: 'PROVEEDOR' as const
+    // 1. Crear usuario en Supabase Auth
+    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+      email: validatedData.email,
+      password: validatedData.password,
+      user_metadata: {
+        nombre: validatedData.nombre,
+        telefono: validatedData.telefono,
+        initialRole: validatedData.initialRole
       }
+    })
+
+    if (authError) {
+      console.error('❌ Error en auth:', authError)
+      throw new Error('Error creating auth user: ' + authError.message)
     }
+
+    if (!authData.user) {
+      throw new Error('No user returned from auth creation')
+    }
+
+    console.log('✅ Usuario auth creado:', authData.user.id)
+
+    // 2. Insertar en tabla users usando supabaseAdmin
+    const { error: userInsertError } = await supabaseAdmin
+      .from('users')
+      .insert([{
+        id: authData.user.id,
+        email: validatedData.email,
+        nombre: validatedData.nombre,
+        telefono: validatedData.telefono || null,
+        activo: true
+      }])
+
+    if (userInsertError) {
+      console.error('❌ Error insertando en users:', userInsertError)
+      // Cleanup: eliminar usuario de auth si falló la inserción
+      await supabaseAdmin.auth.admin.deleteUser(authData.user.id)
+      throw new Error('Error saving user data: ' + userInsertError.message)
+    }
+
+    console.log('✅ Usuario insertado en tabla users')
+
+    // 3. Crear rol de plataforma
+    const { error: roleError } = await supabaseAdmin
+      .from('user_roles')
+      .insert([{
+        user_id: authData.user.id,
+        role: validatedData.initialRole,
+        activo: true
+      }])
+
+    if (roleError) {
+      console.error('⚠️ Error creando rol (no crítico):', roleError)
+    } else {
+      console.log('✅ Rol de usuario creado')
+    }
+
+    // 4. Crear contexto inicial
+    const { error: contextError } = await supabaseAdmin
+      .from('user_contexts')
+      .insert([{
+        user_id: authData.user.id,
+        active_role: validatedData.initialRole,
+        last_switched_at: new Date().toISOString()
+      }])
+
+    if (contextError) {
+      console.error('⚠️ Error creando contexto (no crítico):', contextError)
+    } else {
+      console.log('✅ Contexto de usuario creado')
+    }
+
+    console.log('🎉 Registro completado exitosamente')
 
     return NextResponse.json({
       success: true,
-      message: 'Usuario registrado exitosamente',
+      message: 'Usuario registrado exitosamente. Revisa tu email para confirmar tu cuenta.',
       data: {
-        user: newUser,
-        context: contextResult.data,
-        organization
+        user: {
+          id: authData.user.id,
+          email: validatedData.email,
+          nombre: validatedData.nombre,
+          telefono: validatedData.telefono
+        }
       }
     }, { status: 201 })
 
   } catch (error) {
-    console.error('Error registrando usuario:', error)
+    console.error('💥 Error general en registro:', error)
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -78,7 +123,7 @@ export async function POST(request: NextRequest) {
     }
     
     return NextResponse.json(
-      { success: false, message: 'Error interno del servidor' },
+      { success: false, message: error instanceof Error ? error.message : 'Error interno del servidor' },
       { status: 500 }
     )
   }
