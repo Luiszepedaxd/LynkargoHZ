@@ -46,7 +46,16 @@ export function useAuth() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (event === 'SIGNED_IN' && session?.user) {
-          setUser(session.user as AuthUser)
+          // Convertir usuario de Supabase al tipo AuthUser personalizado
+          const authUser: AuthUser = {
+            id: session.user.id,
+            email: session.user.email || '',
+            nombre: session.user.user_metadata?.nombre || session.user.email?.split('@')[0] || '',
+            userRoles: session.user.user_metadata?.userRoles || ['CLIENTE'],
+            activeContext: session.user.user_metadata?.activeContext,
+            user_metadata: session.user.user_metadata
+          }
+          setUser(authUser)
           await loadUserProfile(session.user.id)
         } else if (event === 'SIGNED_OUT') {
           setUser(null)

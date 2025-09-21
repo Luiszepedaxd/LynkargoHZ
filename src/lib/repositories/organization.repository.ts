@@ -1,4 +1,3 @@
-import { BaseRepository } from './base.repository'
 import { OrganizationRepositoryInterface } from '@/lib/interfaces/organization.interface'
 import { 
   Organization, 
@@ -12,33 +11,81 @@ import {
   OrganizationStats
 } from '@/types'
 import { prisma } from '@/lib/prisma'
-import { successResponse, errorResponse, handleGenericError } from '@/lib/utils/api.utils'
+import { createSuccessResponse, createErrorResponse, handleRepositoryError, createPaginatedResponse } from '@/lib/utils/api.utils'
 import { Prisma } from '@prisma/client'
 
-export class PrismaOrganizationRepository 
-  extends BaseRepository<Organization, CreateOrganizationFormData, CreateOrganizationFormData, BaseSearchFilters>
-  implements OrganizationRepositoryInterface {
+export class PrismaOrganizationRepository implements OrganizationRepositoryInterface {
 
-  protected modelName = 'Organization'
+  // Métodos públicos requeridos por la interfaz
+  async findById(id: string): Promise<BaseApiResponse<Organization>> {
+    try {
+      const result = await prisma.organization.findUnique({
+        where: { id },
+        include: {
+          profile: true,
+          members: {
+            include: {
+              user: {
+                include: {
+                  profile: true
+                }
+              }
+            }
+          }
+        }
+      })
 
-  protected getPrismaModel() {
-    return prisma.organization
+      if (!result) {
+        return createErrorResponse('Organización no encontrada')
+      }
+
+      return createSuccessResponse(result as unknown as Organization)
+    } catch (error) {
+      return handleRepositoryError(error, 'OrganizationRepository.findById')
+    }
   }
 
-  // Métodos públicos requeridos por la interfaz que delegan a la clase base
-  async findById(id: string) {
-    return super.findById(id)
+  async update(id: string, data: Partial<CreateOrganizationFormData>): Promise<BaseApiResponse<Organization>> {
+    try {
+      // Extraer datos del perfil si existe
+      const { profile, ...organizationData } = data
+      
+      const result = await prisma.organization.update({
+        where: { id },
+        data: organizationData,
+        include: {
+          profile: true,
+          members: {
+            include: {
+              user: {
+                include: {
+                  profile: true
+                }
+              }
+            }
+          }
+        }
+      })
+
+      return createSuccessResponse(result as unknown as Organization, 'Organización actualizada exitosamente')
+    } catch (error) {
+      return handleRepositoryError(error, 'OrganizationRepository.update')
+    }
   }
 
-  async update(id: string, data: Partial<CreateOrganizationFormData>) {
-    return super.update(id, data)
+  async delete(id: string): Promise<BaseApiResponse<void>> {
+    try {
+      await prisma.organization.delete({
+        where: { id }
+      })
+
+      return createSuccessResponse(undefined, 'Organización eliminada exitosamente')
+    } catch (error) {
+      return handleRepositoryError(error, 'OrganizationRepository.delete')
+    }
   }
 
-  async delete(id: string) {
-    return super.delete(id)
-  }
-
-  protected buildWhereClause(filters?: BaseSearchFilters): Prisma.OrganizationWhereInput {
+  private buildWhereClause(filters?: BaseSearchFilters): Prisma.OrganizationWhereInput {
     const where: Prisma.OrganizationWhereInput = {}
     
     if (filters?.search) {
@@ -92,9 +139,9 @@ export class PrismaOrganizationRepository
         return org
       })
 
-      return successResponse(organization, 'Organización creada exitosamente')
+      return createSuccessResponse(organization as unknown as Organization, 'Organización creada exitosamente')
     } catch (error) {
-      return handleGenericError(error, 'OrganizationRepository.create')
+      return handleRepositoryError(error, 'OrganizationRepository.create')
     }
   }
 
@@ -120,9 +167,9 @@ export class PrismaOrganizationRepository
 
       const organizations = memberships.map(membership => membership.organization)
 
-      return successResponse(organizations, 'Organizaciones obtenidas exitosamente')
+      return createSuccessResponse(organizations as unknown as Organization[], 'Organizaciones obtenidas exitosamente')
     } catch (error) {
-      return handleGenericError(error, 'OrganizationRepository.findByUserId')
+      return handleRepositoryError(error, 'OrganizationRepository.findByUserId')
     }
   }
 
@@ -166,9 +213,9 @@ export class PrismaOrganizationRepository
 
       const pagination = this.calculatePagination(page, limit, total).pagination
 
-      return this.paginatedResponse(members, pagination)
+      return createPaginatedResponse(members as unknown as OrganizationMember[], pagination)
     } catch (error) {
-      return handleGenericError(error, 'OrganizationRepository.getMembers')
+      return handleRepositoryError(error, 'OrganizationRepository.getMembers')
     }
   }
 
@@ -187,7 +234,7 @@ export class PrismaOrganizationRepository
       })
 
       if (!inviterMembership) {
-        return errorResponse('No tienes permisos para invitar miembros', 403)
+        return createErrorResponse('No tienes permisos para invitar miembros')
       }
 
       // Buscar si el usuario ya existe
@@ -209,7 +256,7 @@ export class PrismaOrganizationRepository
         })
 
         if (existingMembership) {
-          return errorResponse('Este usuario ya es miembro de la organización', 400)
+          return createErrorResponse('Este usuario ya es miembro de la organización')
         }
 
         userId = existingUser.id
@@ -241,9 +288,9 @@ export class PrismaOrganizationRepository
         }
       })
 
-      return successResponse(membership, 'Invitación enviada exitosamente')
+      return createSuccessResponse(membership as unknown as OrganizationMember, 'Invitación enviada exitosamente')
     } catch (error) {
-      return handleGenericError(error, 'OrganizationRepository.inviteMember')
+      return handleRepositoryError(error, 'OrganizationRepository.inviteMember')
     }
   }
 
@@ -261,7 +308,7 @@ export class PrismaOrganizationRepository
       })
 
       if (!requesterMembership) {
-        return errorResponse('No tienes permisos para cambiar roles', 403)
+        return createErrorResponse('No tienes permisos para cambiar roles')
       }
 
       const membership = await prisma.organizationMember.update({
@@ -277,9 +324,9 @@ export class PrismaOrganizationRepository
         }
       })
 
-      return successResponse(membership, 'Rol actualizado exitosamente')
+      return createSuccessResponse(membership, 'Rol actualizado exitosamente')
     } catch (error) {
-      return handleGenericError(error, 'OrganizationRepository.updateMemberRole')
+      return handleRepositoryError(error, 'OrganizationRepository.updateMemberRole')
     }
   }
 
@@ -294,16 +341,16 @@ export class PrismaOrganizationRepository
       })
 
       if (!requesterMembership) {
-        return errorResponse('No tienes permisos para remover miembros', 403)
+        return createErrorResponse('No tienes permisos para remover miembros')
       }
 
       await prisma.organizationMember.delete({
         where: { id: memberId }
       })
 
-      return successResponse(undefined, 'Miembro removido exitosamente')
+      return createSuccessResponse(undefined, 'Miembro removido exitosamente')
     } catch (error) {
-      return handleGenericError(error, 'OrganizationRepository.removeMember')
+      return handleRepositoryError(error, 'OrganizationRepository.removeMember')
     }
   }
 
@@ -317,7 +364,7 @@ export class PrismaOrganizationRepository
       })
 
       if (!membership || membership.userId !== userId) {
-        return errorResponse('Invitación no encontrada', 404)
+        return createErrorResponse('Invitación no encontrada')
       }
 
       const updatedMembership = await prisma.organizationMember.update({
@@ -333,9 +380,9 @@ export class PrismaOrganizationRepository
         }
       })
 
-      return successResponse(updatedMembership, 'Invitación aceptada exitosamente')
+      return createSuccessResponse(updatedMembership, 'Invitación aceptada exitosamente')
     } catch (error) {
-      return handleGenericError(error, 'OrganizationRepository.acceptInvitation')
+      return handleRepositoryError(error, 'OrganizationRepository.acceptInvitation')
     }
   }
 
@@ -388,9 +435,9 @@ export class PrismaOrganizationRepository
         totalRevenue: totalRevenue._sum.precio || 0
       }
 
-      return successResponse(stats)
+      return createSuccessResponse(stats)
     } catch (error) {
-      return handleGenericError(error, 'OrganizationRepository.getStats')
+      return handleRepositoryError(error, 'OrganizationRepository.getStats')
     }
   }
 
@@ -405,12 +452,12 @@ export class PrismaOrganizationRepository
       })
 
       if (!membership) {
-        return errorResponse('Usuario no es miembro de esta organización', 404)
+        return createErrorResponse('Usuario no es miembro de esta organización')
       }
 
-      return successResponse(membership.role)
+      return createSuccessResponse(membership.role)
     } catch (error) {
-      return handleGenericError(error, 'OrganizationRepository.getUserRole')
+      return handleRepositoryError(error, 'OrganizationRepository.getUserRole')
     }
   }
 

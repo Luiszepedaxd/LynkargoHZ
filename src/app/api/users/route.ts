@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import type { PrismaClient, UserType } from '@prisma/client'
+import type { PrismaClient } from '@prisma/client'
 import { createUserSchema } from '@/lib/utils/validation.schemas'
 import {
   successResponse,
@@ -22,20 +22,19 @@ export async function GET(request: NextRequest) {
 
     // Construir filtros
     const where: {
-      tipo?: UserType;
       OR?: Array<{
         nombre?: { contains: string; mode: 'insensitive' };
         email?: { contains: string; mode: 'insensitive' };
-        empresa?: { contains: string; mode: 'insensitive' };
       }>;
     } = {}
     
-    if (tipo) where.tipo = tipo as UserType
+    // tipo: campo no existe en el modelo User
+    // if (tipo) where.tipo = tipo as UserType
     if (search) {
       where.OR = [
         { nombre: { contains: search, mode: 'insensitive' } },
         { email: { contains: search, mode: 'insensitive' } },
-        { empresa: { contains: search, mode: 'insensitive' } }
+        // { empresa: { contains: search, mode: 'insensitive' } } // campo no existe
       ]
     }
 
@@ -48,7 +47,6 @@ export async function GET(request: NextRequest) {
           _count: {
             select: {
               orders: true,
-              reviews: true
             }
           }
         },
@@ -91,8 +89,8 @@ export async function POST(request: NextRequest) {
         data: {
           email: validatedData.email,
           nombre: validatedData.nombre,
-          empresa: validatedData.empresa,
-          tipo: validatedData.tipo
+          // empresa: campo no existe en el modelo User
+          // tipo: campo no existe en el modelo User
         }
       })
       

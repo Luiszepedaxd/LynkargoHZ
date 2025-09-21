@@ -58,33 +58,31 @@ export async function GET(request: NextRequest) {
       prisma.provider.findMany({
         where,
         include: {
-          user: {
+          organization: {
             select: {
               id: true,
-              email: true,
               nombre: true,
-              empresa: true
+              tipo: true
             }
           },
-          servicios: {
+          services: {
             where: { activo: true }
           },
-          ubicaciones: {
+          locations: {
             where: { activo: true }
           },
-          documentos: {
-            where: { activo: true }
+          documents: {
+            where: { verificado: true }
           },
           _count: {
             select: {
-              orders: true,
-              reviews: true
+              orders: true
             }
           }
         },
         skip,
         take: limit,
-        orderBy: { calificacion: 'desc' }
+        orderBy: { createdAt: 'desc' }
       }),
       prisma.provider.count({ where })
     ])
@@ -105,29 +103,35 @@ export async function POST(request: NextRequest) {
     // Validar datos de entrada
     const validatedData = createProviderSchema.parse(body)
     
-    // Verificar si el usuario existe
-    const existingUser = await prisma.user.findUnique({
-      where: { id: validatedData.userId }
+    // TODO: Obtener userId del token de autenticación
+    const userId = 'temp-user-id' // Reemplazar con autenticación real
+    
+    // Verificar si la organización existe
+    const existingOrganization = await prisma.organization.findUnique({
+      where: { id: validatedData.organizationId }
     })
     
-    if (!existingUser) {
-      return errorResponse('Usuario no encontrado', 404)
+    if (!existingOrganization) {
+      return errorResponse('Organización no encontrada', 404)
     }
     
-    // Verificar si ya es proveedor
-    const existingProvider = await prisma.provider.findUnique({
-      where: { userId: validatedData.userId }
+    // Verificar si ya existe un proveedor con ese nombre en la organización
+    const existingProvider = await prisma.provider.findFirst({
+      where: { 
+        organizationId: validatedData.organizationId,
+        nombre: validatedData.nombre
+      }
     })
     
     if (existingProvider) {
-      return errorResponse('Este usuario ya es proveedor', 400)
+      return errorResponse('Ya existe un proveedor con este nombre en la organización', 400)
     }
     
     // Crear proveedor con transacción
-    const newProvider = await prisma.$transaction(async (tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>) => {
+    const newProvider = await prisma.$transaction(async (tx) => {
       const provider = await tx.provider.create({
         data: {
-          userId: validatedData.userId,
+          organizationId: validatedData.organizationId,
           nombre: validatedData.nombre,
           descripcion: validatedData.descripcion
         }
@@ -135,7 +139,7 @@ export async function POST(request: NextRequest) {
       
       // Crear servicios si se proporcionan
       if (validatedData.servicios && validatedData.servicios.length > 0) {
-        await tx.service.createMany({
+        await tx.providerService.createMany({
           data: validatedData.servicios.map(servicio => ({
             providerId: provider.id,
             ...servicio
@@ -145,7 +149,7 @@ export async function POST(request: NextRequest) {
       
       // Crear ubicaciones si se proporcionan
       if (validatedData.ubicaciones && validatedData.ubicaciones.length > 0) {
-        await tx.location.createMany({
+        await tx.providerLocation.createMany({
           data: validatedData.ubicaciones.map(ubicacion => ({
             providerId: provider.id,
             ...ubicacion
@@ -155,7 +159,7 @@ export async function POST(request: NextRequest) {
       
       // Crear documentos si se proporcionan
       if (validatedData.documentos && validatedData.documentos.length > 0) {
-        await tx.document.createMany({
+        await tx.providerDocument.createMany({
           data: validatedData.documentos.map(documento => ({
             providerId: provider.id,
             ...documento

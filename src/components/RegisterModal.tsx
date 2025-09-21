@@ -14,10 +14,10 @@ interface RegisterModalProps {
   onRegister: (data: RegisterFormData) => Promise<void>
 }
 
-const organizationTypeOptions = [
+const initialRoleOptions = [
   { value: 'CLIENTE', label: 'Cliente' },
   { value: 'PROVEEDOR', label: 'Proveedor' },
-  { value: 'MIXTO', label: 'Cliente y Proveedor' }
+  { value: 'ADMIN', label: 'Administrador' }
 ]
 
 export default function RegisterModal({ isOpen, onClose, onRegister }: RegisterModalProps) {
@@ -57,13 +57,12 @@ export default function RegisterModal({ isOpen, onClose, onRegister }: RegisterM
           />
 
           <InputField
-            {...register('organizationName')}
+            {...register('telefono')}
             type="text"
-            id="organizationName"
-            label="Nombre de la empresa"
-            placeholder="Nombre de tu empresa"
-            error={errors.organizationName}
-            required
+            id="telefono"
+            label="Teléfono"
+            placeholder="Tu número de teléfono"
+            error={errors.telefono}
           />
         </div>
 
@@ -88,18 +87,18 @@ export default function RegisterModal({ isOpen, onClose, onRegister }: RegisterM
         />
 
         <SelectField
-          {...register('organizationType')}
-          id="organizationType"
-          label="Tipo de organización"
-          options={organizationTypeOptions}
-          placeholder="Selecciona el tipo de organización..."
-          error={errors.organizationType}
+          {...register('initialRole')}
+          id="initialRole"
+          label="Rol inicial"
+          options={initialRoleOptions}
+          placeholder="Selecciona tu rol inicial..."
+          error={errors.initialRole}
           required
         />
 
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
           <p className="text-sm text-blue-600">
-            Al crear tu cuenta, también crearás una organización que podrás gestionar junto con tu equipo.
+            Selecciona tu rol inicial para comenzar a usar la plataforma.
           </p>
         </div>
 

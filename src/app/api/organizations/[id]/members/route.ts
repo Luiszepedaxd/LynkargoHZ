@@ -57,7 +57,12 @@ export async function GET(
       return errorResponse(result.error || 'Error al obtener miembros', 500)
     }
 
-    return paginatedResponse(result.data, result.pagination!)
+    // Validar que tenemos datos y paginación
+    if (!result.data || !result.pagination) {
+      return errorResponse('Datos de miembros no disponibles', 500)
+    }
+
+    return paginatedResponse(result.data, result.pagination)
 
   } catch (error) {
     return handleGenericError(error, 'GET /api/organizations/[id]/members')

@@ -44,21 +44,21 @@ export async function GET(
           },
           orderBy: { createdAt: 'desc' }
         },
-        reviews: {
-          include: {
-            provider: {
-              select: {
-                id: true,
-                nombre: true
-              }
-            }
-          },
-          orderBy: { createdAt: 'desc' }
-        },
+        // reviews: campo no existe en el modelo User
+        // reviews: {
+        //   include: {
+        //     provider: {
+        //       select: {
+        //         id: true,
+        //         nombre: true
+        //       }
+        //     }
+        //   },
+        //   orderBy: { createdAt: 'desc' }
+        // },
         _count: {
           select: {
             orders: true,
-            reviews: true
           }
         }
       }
@@ -117,8 +117,8 @@ export async function PUT(
         where: { id },
         data: {
           nombre: validatedData.nombre,
-          empresa: validatedData.empresa,
-          tipo: validatedData.tipo,
+          // empresa: campo no existe en el modelo User
+          // tipo: campo no existe en el modelo User
           updatedAt: new Date()
         }
       })

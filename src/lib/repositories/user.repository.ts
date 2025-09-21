@@ -1,5 +1,5 @@
-import { BaseRepository } from './base.repository'
 import { User, RegisterFormData, ApiResponse, PaginationParams, ApiListResponse } from '@/types'
+import { HttpClient } from '@/lib/utils/http.utils'
 
 export interface CreateUserData extends Omit<RegisterFormData, 'password'> {
   profile?: {
@@ -27,9 +27,39 @@ export interface UserRepositoryInterface {
   findByType(tipo: string): Promise<ApiResponse<User[]>>
 }
 
-export class UserRepository extends BaseRepository<User, CreateUserData, UpdateUserData> implements UserRepositoryInterface {
+export class UserRepository implements UserRepositoryInterface {
+  private httpClient: HttpClient
+  private baseEndpoint: string
+
   constructor() {
-    super('/users')
+    this.httpClient = new HttpClient()
+    this.baseEndpoint = '/users'
+  }
+
+  // Métodos públicos requeridos por la interfaz
+  async findById(id: string): Promise<ApiResponse<User>> {
+    return this.httpClient.get<User>(`${this.baseEndpoint}/${id}`)
+  }
+
+  async create(data: CreateUserData): Promise<ApiResponse<User>> {
+    return this.httpClient.post<User>(this.baseEndpoint, data)
+  }
+
+  async update(id: string, data: UpdateUserData): Promise<ApiResponse<User>> {
+    return this.httpClient.put<User>(`${this.baseEndpoint}/${id}`, data)
+  }
+
+  async delete(id: string): Promise<ApiResponse<void>> {
+    return this.httpClient.delete<void>(`${this.baseEndpoint}/${id}`)
+  }
+
+  async findAll(params?: PaginationParams): Promise<ApiListResponse<User>> {
+    const queryParams = new URLSearchParams()
+    if (params?.page) queryParams.append('page', params.page.toString())
+    if (params?.limit) queryParams.append('limit', params.limit.toString())
+    if (params?.search) queryParams.append('search', params.search)
+    
+    return this.httpClient.get<ApiListResponse<User>>(`${this.baseEndpoint}?${queryParams.toString()}`)
   }
 
   async findByEmail(email: string): Promise<ApiResponse<User[]>> {

@@ -21,8 +21,18 @@ export class SupabaseAuthRepository implements AuthRepositoryInterface {
       if (error) throw error
       if (!data.user) throw new Error('Login failed')
 
+      // Convertir usuario de Supabase al tipo AuthUser personalizado
+      const authUser: AuthUser = {
+        id: data.user.id,
+        email: data.user.email || '',
+        nombre: data.user.user_metadata?.nombre || data.user.email?.split('@')[0] || '',
+        userRoles: data.user.user_metadata?.userRoles || ['CLIENTE'],
+        activeContext: data.user.user_metadata?.activeContext,
+        user_metadata: data.user.user_metadata
+      }
+
       return createSuccessResponse(
-        data.user as AuthUser,
+        authUser,
         'Login successful'
       )
     } catch (error) {
@@ -38,8 +48,8 @@ export class SupabaseAuthRepository implements AuthRepositoryInterface {
         options: {
           data: {
             nombre: userData.nombre,
-            nombre_empresa: userData.empresa,
-            tipo_usuario: userData.tipo
+            telefono: userData.telefono,
+            initialRole: userData.initialRole
           }
         }
       })
@@ -55,8 +65,8 @@ export class SupabaseAuthRepository implements AuthRepositoryInterface {
           id: authData.user.id,
           nombre: userData.nombre,
           correo: userData.email,
-          nombre_empresa: userData.empresa,
-          tipo_usuario: userData.tipo
+          telefono: userData.telefono,
+          initialRole: userData.initialRole
         }])
 
       if (insertError) {
@@ -96,7 +106,17 @@ export class SupabaseAuthRepository implements AuthRepositoryInterface {
         return handleServiceError<AuthUser>(new NotFoundError('No authenticated user'), 'AuthRepository.getCurrentUser')
       }
 
-      return createSuccessResponse(user as AuthUser)
+      // Convertir usuario de Supabase al tipo AuthUser personalizado
+      const authUser: AuthUser = {
+        id: user.id,
+        email: user.email || '',
+        nombre: user.user_metadata?.nombre || user.email?.split('@')[0] || '',
+        userRoles: user.user_metadata?.userRoles || ['CLIENTE'],
+        activeContext: user.user_metadata?.activeContext,
+        user_metadata: user.user_metadata
+      }
+
+      return createSuccessResponse(authUser)
     } catch (error) {
       return handleServiceError<AuthUser>(error, 'AuthRepository.getCurrentUser')
     }

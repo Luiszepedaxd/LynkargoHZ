@@ -54,11 +54,10 @@ export async function GET(request: NextRequest) {
         id: string;
         nombre: string;
         descripcion?: string | null;
-        calificacion: number;
-        user: { id: string; nombre: string; email: string };
-        servicios: Array<{ id: string; nombre: string; precio?: number | null }>;
-        ubicaciones: Array<{ id: string; ciudad: string; estado: string }>;
-        _count: { orders: number; reviews: number };
+        organization: { id: string; nombre: string; tipo: string };
+        services: Array<{ id: string; nombre: string; precio?: number | null }>;
+        locations: Array<{ id: string; ciudad: string; estado: string }>;
+        _count: { orders: number };
       }>;
       servicios?: Array<{
         id: string;
@@ -68,8 +67,8 @@ export async function GET(request: NextRequest) {
         provider: {
           id: string;
           nombre: string;
-          user: { id: string; nombre: string; email: string };
-          ubicaciones: Array<{ id: string; ciudad: string; estado: string }>;
+          organization: { id: string; nombre: string; tipo: string };
+          locations: Array<{ id: string; ciudad: string; estado: string }>;
         };
       }>;
       ubicaciones?: Array<{
@@ -79,8 +78,8 @@ export async function GET(request: NextRequest) {
         provider: {
           id: string;
           nombre: string;
-          user: { id: string; nombre: string; email: string };
-          servicios: Array<{ id: string; nombre: string; precio?: number | null }>;
+          organization: { id: string; nombre: string; tipo: string };
+          services: Array<{ id: string; nombre: string; precio?: number | null }>;
         };
       }>;
     } = {}
@@ -118,37 +117,37 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      if (calificacion) {
-        where.calificacion = { gte: calificacion }
-      }
+      // Campo calificacion no existe en el modelo Provider
+      // if (calificacion) {
+      //   where.calificacion = { gte: calificacion }
+      // }
 
       const [providers, providerCount] = await Promise.all([
         prisma.provider.findMany({
           where,
           include: {
-            user: {
+            organization: {
               select: {
                 id: true,
                 nombre: true,
-                email: true
+                tipo: true
               }
             },
-            servicios: {
+            services: {
               where: { activo: true }
             },
-            ubicaciones: {
+            locations: {
               where: { activo: true }
             },
             _count: {
               select: {
                 orders: true,
-                reviews: true
               }
             }
           },
           skip,
           take: limit,
-          orderBy: { calificacion: 'desc' }
+          orderBy: { createdAt: 'desc' }
         }),
         prisma.provider.count({ where })
       ])
@@ -176,19 +175,19 @@ export async function GET(request: NextRequest) {
       }
 
       const [services, serviceCount] = await Promise.all([
-        prisma.service.findMany({
+        prisma.providerService.findMany({
           where,
           include: {
             provider: {
               include: {
-                user: {
+                organization: {
                   select: {
                     id: true,
                     nombre: true,
-                    email: true
+                    tipo: true
                   }
                 },
-                ubicaciones: {
+                locations: {
                   where: { activo: true }
                 }
               }
@@ -198,7 +197,7 @@ export async function GET(request: NextRequest) {
           take: limit,
           orderBy: { precio: 'asc' }
         }),
-        prisma.service.count({ where })
+        prisma.providerService.count({ where })
       ])
 
       results.servicios = services
@@ -222,19 +221,19 @@ export async function GET(request: NextRequest) {
       if (estado) where.estado = { contains: estado, mode: 'insensitive' }
 
       const [locations, locationCount] = await Promise.all([
-        prisma.location.findMany({
+        prisma.providerLocation.findMany({
           where,
           include: {
             provider: {
               include: {
-                user: {
+                organization: {
                   select: {
                     id: true,
                     nombre: true,
-                    email: true
+                    tipo: true
                   }
                 },
-                servicios: {
+                services: {
                   where: { activo: true }
                 }
               }
@@ -244,7 +243,7 @@ export async function GET(request: NextRequest) {
           take: limit,
           orderBy: { ciudad: 'asc' }
         }),
-        prisma.location.count({ where })
+        prisma.providerLocation.count({ where })
       ])
 
       results.ubicaciones = locations
@@ -262,30 +261,29 @@ export async function GET(request: NextRequest) {
             ]
           },
           include: {
-            user: {
+            organization: {
               select: {
                 id: true,
                 nombre: true,
-                email: true
+                tipo: true
               }
             },
-            servicios: {
+            services: {
               where: { activo: true }
             },
-            ubicaciones: {
+            locations: {
               where: { activo: true }
             },
             _count: {
               select: {
                 orders: true,
-                reviews: true
               }
             }
           },
           take: Math.ceil(limit / 3),
-          orderBy: { calificacion: 'desc' }
+          orderBy: { createdAt: 'desc' }
         }),
-        prisma.service.findMany({
+        prisma.providerService.findMany({
           where: {
             activo: true,
             OR: [
@@ -296,14 +294,14 @@ export async function GET(request: NextRequest) {
           include: {
             provider: {
               include: {
-                user: {
+                organization: {
                   select: {
                     id: true,
                     nombre: true,
-                    email: true
+                    tipo: true
                   }
                 },
-                ubicaciones: {
+                locations: {
                   where: { activo: true }
                 }
               }
@@ -312,7 +310,7 @@ export async function GET(request: NextRequest) {
           take: Math.ceil(limit / 3),
           orderBy: { precio: 'asc' }
         }),
-        prisma.location.findMany({
+        prisma.providerLocation.findMany({
           where: {
             activo: true,
             OR: [
@@ -323,14 +321,14 @@ export async function GET(request: NextRequest) {
           include: {
             provider: {
               include: {
-                user: {
+                organization: {
                   select: {
                     id: true,
                     nombre: true,
-                    email: true
+                    tipo: true
                   }
                 },
-                servicios: {
+                services: {
                   where: { activo: true }
                 }
               }

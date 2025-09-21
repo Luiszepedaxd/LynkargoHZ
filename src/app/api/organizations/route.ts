@@ -3,6 +3,7 @@ import { PrismaOrganizationRepository } from '@/lib/repositories/organization.re
 import { createOrganizationService } from '@/lib/services/organization.service'
 import { OrganizationNotificationService } from '@/lib/services/organization-notification.service'
 import { NotificationService } from '@/lib/services/notification.service'
+import { NotificationProvider } from '@/lib/providers/notification.provider'
 import { createPermissionsService } from '@/lib/services/permissions.service'
 import { createOrganizationSchema } from '@/lib/utils/validation.schemas'
 import {
@@ -14,7 +15,21 @@ import {
 // Factory function para crear dependencias (Principio de Inversión de Dependencias)
 function createDependencies() {
   const organizationRepository = new PrismaOrganizationRepository()
-  const notificationService = new NotificationService()
+  
+  // Mock notification provider para desarrollo
+  const notificationProvider: NotificationProvider = {
+    async sendWelcomeEmail() {
+      return { success: true, message: 'Mock email sent' }
+    },
+    async sendConfirmationEmail() {
+      return { success: true, message: 'Mock email sent' }
+    },
+    async subscribeToNewsletter() {
+      return { success: true, message: 'Mock email sent' }
+    }
+  }
+  
+  const notificationService = new NotificationService(notificationProvider)
   const organizationNotificationService = new OrganizationNotificationService(notificationService)
   const organizationService = createOrganizationService(organizationRepository, organizationNotificationService)
   const permissionsService = createPermissionsService()

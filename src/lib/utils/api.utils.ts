@@ -3,7 +3,7 @@
 
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { ApiResponse, PaginationResponse } from '@/types'
+import { ApiResponse, PaginationResponse, BaseApiResponse, BasePaginatedResponse } from '@/types'
 
 // Respuesta exitosa estándar
 export function successResponse<T>(
@@ -94,4 +94,49 @@ export function calculatePagination(
       pages: Math.ceil(total / limit)
     }
   }
+}
+
+// Funciones para repositorios que devuelven objetos BaseApiResponse
+export function createSuccessResponse<T>(
+  data?: T, 
+  message?: string
+): BaseApiResponse<T> {
+  return {
+    success: true,
+    message,
+    data
+  }
+}
+
+export function createErrorResponse(
+  message: string,
+  error?: string
+): BaseApiResponse<never> {
+  return {
+    success: false,
+    error: message,
+    message
+  }
+}
+
+export function createPaginatedResponse<T>(
+  data: T[],
+  pagination: PaginationResponse
+): BasePaginatedResponse<T> {
+  return {
+    success: true,
+    data,
+    pagination
+  }
+}
+
+// Versión de handleGenericError para repositorios que devuelven BaseApiResponse
+export function handleRepositoryError(error: unknown, context: string): BaseApiResponse<never> {
+  console.error(`Error in ${context}:`, error)
+  
+  if (error instanceof Error) {
+    return createErrorResponse(error.message)
+  }
+  
+  return createErrorResponse('Error interno del servidor')
 }

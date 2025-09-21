@@ -16,9 +16,9 @@ export const registerSchema = z.object({
   nombre: nameSchema,
   email: emailSchema,
   password: passwordSchema,
-  organizationName: nameSchema,
-  organizationType: z.enum(['CLIENTE', 'PROVEEDOR', 'MIXTO'], {
-    required_error: 'Debe seleccionar el tipo de organización'
+  telefono: optionalStringSchema,
+  initialRole: z.enum(['CLIENTE', 'PROVEEDOR', 'ADMIN'], {
+    required_error: 'Debe seleccionar un rol inicial'
   })
 })
 
@@ -72,14 +72,14 @@ export const inviteMemberSchema = z.object({
   organizationId: z.string().min(1, 'ID de organización requerido'),
   email: emailSchema,
   nombre: nameSchema,
-  role: z.enum(['ADMIN', 'MANAGER', 'EMPLOYEE'], {
+  role: z.enum(['OWNER', 'ADMIN', 'MANAGER', 'OPERATOR', 'VIEWER'], {
     required_error: 'Debe seleccionar un rol'
   })
 })
 
 export const updateMemberRoleSchema = z.object({
   memberId: z.string().uuid('ID de miembro inválido'),
-  role: z.enum(['ADMIN', 'MANAGER', 'EMPLOYEE'], {
+  role: z.enum(['OWNER', 'ADMIN', 'MANAGER', 'OPERATOR', 'VIEWER'], {
     required_error: 'Debe seleccionar un rol válido'
   })
 })
