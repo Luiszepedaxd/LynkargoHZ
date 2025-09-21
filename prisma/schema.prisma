@@ -7,6 +7,46 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ===== MODELO DE USUARIOS (Persona física) =====
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  nombre    String
+  telefono  String?
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  profile         UserProfile?
+  memberships     OrganizationMember[]
+  orders          Order[]
+  notifications   Notification[]
+  userRoles       UserRole[]
+
+  @@map("users")
+}
+
+model UserProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  direccion String?
+  ciudad    String?
+  estado    String?
+  codigoPostal String?
+  website   String?
+  descripcion String?
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
 // ===== MODELO DE ORGANIZACIONES =====
 
 model Organization {
@@ -48,14 +88,14 @@ model OrganizationProfile {
 }
 
 model OrganizationMember {
-  id             String       @id @default(uuid())
+  id             String      @id @default(uuid())
   organizationId String
   userId         String
   role           MemberRole
-  activo         Boolean      @default(true)
-  joinedAt       DateTime     @default(now())
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  activo         Boolean     @default(true)
+  joinedAt       DateTime    @default(now())
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 
   // Relaciones
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -65,53 +105,46 @@ model OrganizationMember {
   @@map("organization_members")
 }
 
-// ===== MODELO DE USUARIOS =====
+// ===== MODELO DE ROLES DE PLATAFORMA =====
 
-model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  nombre    String
-  empresa   String?
-  tipo      UserType
-  activo    Boolean   @default(true)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
-  // Relaciones
-  profile       UserProfile?
-  memberships   OrganizationMember[]
-  orders        Order[]
-  notifications Notification[]
-
-  @@map("users")
-}
-
-model UserProfile {
-  id           String   @id @default(uuid())
-  userId       String   @unique
-  telefono     String?
-  direccion    String?
-  ciudad       String?
-  estado       String?
-  codigoPostal String?
-  rfc          String?
-  website      String?
-  descripcion  String?
-  logo         String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+model UserRole {
+  id        String      @id @default(uuid())
+  userId    String
+  role      PlatformRole
+  activo    Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 
   // Relaciones
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("user_profiles")
+  @@unique([userId, role])
+  @@map("user_roles")
+}
+
+// ===== MODELO DE CONTEXTO ACTIVO =====
+
+model UserContext {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  activeRole     PlatformRole
+  activeOrganizationId String?
+  lastSwitchedAt DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relaciones
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization? @relation(fields: [activeOrganizationId], references: [id], onDelete: SetNull)
+
+  @@map("user_contexts")
 }
 
 // ===== MODELO DE PROVEEDORES =====
 
 model Provider {
   id             String                @id @default(uuid())
-  organizationId String?
+  organizationId String
   nombre         String
   descripcion    String?
   activo         Boolean               @default(true)
@@ -119,10 +152,10 @@ model Provider {
   updatedAt      DateTime              @updatedAt
 
   // Relaciones
-  organization Organization?         @relation(fields: [organizationId], references: [id], onDelete: SetNull)
-  servicios    ProviderService[]
-  ubicaciones  ProviderLocation[]
-  documentos   ProviderDocument[]
+  organization Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  services     ProviderService[]
+  locations    ProviderLocation[]
+  documents    ProviderDocument[]
   orders       Order[]
 
   @@map("providers")
@@ -251,22 +284,14 @@ enum MemberRole {
   OWNER
   ADMIN
   MANAGER
-  EMPLOYEE
+  OPERATOR
+  VIEWER
 }
 
-enum UserType {
+enum PlatformRole {
   CLIENTE
   PROVEEDOR
   ADMIN
-}
-
-enum DocumentType {
-  RFC
-  ACTA_CONSTITUTIVA
-  COMPROBANTE_DOMICILIO
-  SEGURO
-  LICENCIA
-  OTRO
 }
 
 enum OrderStatus {
@@ -276,6 +301,15 @@ enum OrderStatus {
   EN_TRANSITO
   ENTREGADA
   CANCELADA
+}
+
+enum DocumentType {
+  RFC
+  ACTA_CONSTITUTIVA
+  COMPROBANTE_DOMICILIO
+  SEGURO
+  LICENCIA
+  OTRO
 }
 
 enum NotificationType {

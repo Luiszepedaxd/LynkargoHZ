@@ -3,6 +3,7 @@ import { PrismaOrganizationRepository } from '@/lib/repositories/organization.re
 import { createOrganizationService } from '@/lib/services/organization.service'
 import { OrganizationNotificationService } from '@/lib/services/organization-notification.service'
 import { NotificationService } from '@/lib/services/notification.service'
+import { createPermissionsService } from '@/lib/services/permissions.service'
 import { createOrganizationSchema } from '@/lib/utils/validation.schemas'
 import {
   successResponse,
@@ -16,8 +17,9 @@ function createDependencies() {
   const notificationService = new NotificationService()
   const organizationNotificationService = new OrganizationNotificationService(notificationService)
   const organizationService = createOrganizationService(organizationRepository, organizationNotificationService)
+  const permissionsService = createPermissionsService()
   
-  return { organizationService }
+  return { organizationService, permissionsService }
 }
 
 // GET - Obtener organizaciones del usuario
@@ -51,7 +53,14 @@ export async function POST(request: NextRequest) {
     // TODO: Obtener userId del token de autenticación
     const userId = 'temp-user-id' // Reemplazar con autenticación real
 
-    const { organizationService } = createDependencies()
+    const { organizationService, permissionsService } = createDependencies()
+    
+    // Verificar permisos para crear organización
+    const canCreate = await permissionsService.canPerformAction(userId, 'canCreateServices')
+    if (!canCreate) {
+      return errorResponse('No tienes permisos para crear organizaciones', 403)
+    }
+
     const result = await organizationService.createOrganization(validatedData, userId)
 
     if (!result.success) {
