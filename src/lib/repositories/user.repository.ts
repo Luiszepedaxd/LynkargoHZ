@@ -19,7 +19,7 @@ export type UpdateUserData = Partial<CreateUserData>
 
 export interface UserRepositoryInterface {
   findById(id: string): Promise<ApiResponse<User>>
-  findAll(params?: PaginationParams): Promise<ApiListResponse<User>>
+  findAll(params?: PaginationParams): Promise<ApiResponse<ApiListResponse<User>>>
   create(data: CreateUserData): Promise<ApiResponse<User>>
   update(id: string, data: UpdateUserData): Promise<ApiResponse<User>>
   delete(id: string): Promise<ApiResponse<void>>
@@ -53,7 +53,7 @@ export class UserRepository implements UserRepositoryInterface {
     return this.httpClient.delete<void>(`${this.baseEndpoint}/${id}`)
   }
 
-  async findAll(params?: PaginationParams): Promise<ApiListResponse<User>> {
+  async findAll(params?: PaginationParams): Promise<ApiResponse<ApiListResponse<User>>> {
     const queryParams = new URLSearchParams()
     if (params?.page) queryParams.append('page', params.page.toString())
     if (params?.limit) queryParams.append('limit', params.limit.toString())

@@ -9,7 +9,7 @@ export class UserService {
     return this.userProvider.findById(id)
   }
 
-  async findAll(params?: PaginationParams): Promise<ApiListResponse<User>> {
+  async findAll(params?: PaginationParams): Promise<ApiResponse<ApiListResponse<User>>> {
     return this.userProvider.findAll(params)
   }
 

@@ -1,6 +1,5 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import type { PrismaClient } from '@prisma/client'
 import { createProviderSchema } from '@/lib/utils/validation.schemas'
 import {
   successResponse,
@@ -104,7 +103,7 @@ export async function POST(request: NextRequest) {
     const validatedData = createProviderSchema.parse(body)
     
     // TODO: Obtener userId del token de autenticación
-    const userId = 'temp-user-id' // Reemplazar con autenticación real
+    // const userId = 'temp-user-id' // Reemplazar con autenticación real
     
     // Verificar si la organización existe
     const existingOrganization = await prisma.organization.findUnique({

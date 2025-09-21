@@ -1,6 +1,5 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import type { PrismaClient } from '@prisma/client'
 import { createUserSchema } from '@/lib/utils/validation.schemas'
 import {
   successResponse,
@@ -16,7 +15,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const { page, limit, search } = extractPaginationParams(searchParams)
-    const tipo = searchParams.get('tipo')
+    // const tipo = searchParams.get('tipo')
 
     const { skip } = calculatePagination(page, limit, 0)
 
@@ -84,7 +83,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Crear usuario con transacción
-    const newUser = await prisma.$transaction(async (tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>) => {
+    const newUser = await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: {
           email: validatedData.email,

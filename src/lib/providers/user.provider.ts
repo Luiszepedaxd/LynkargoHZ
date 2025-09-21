@@ -3,7 +3,7 @@ import { UserRepositoryInterface, CreateUserData, UpdateUserData } from '@/lib/r
 
 export interface UserProvider {
   findById(id: string): Promise<ApiResponse<User>>
-  findAll(params?: PaginationParams): Promise<ApiListResponse<User>>
+  findAll(params?: PaginationParams): Promise<ApiResponse<ApiListResponse<User>>>
   create(data: CreateUserData): Promise<ApiResponse<User>>
   update(id: string, data: UpdateUserData): Promise<ApiResponse<User>>
   delete(id: string): Promise<ApiResponse<void>>
@@ -18,7 +18,7 @@ export class UserProviderService implements UserProvider {
     return this.userRepository.findById(id)
   }
 
-  async findAll(params?: PaginationParams): Promise<ApiListResponse<User>> {
+  async findAll(params?: PaginationParams): Promise<ApiResponse<ApiListResponse<User>>> {
     return this.userRepository.findAll(params)
   }
 

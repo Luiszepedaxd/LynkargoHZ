@@ -1,6 +1,7 @@
 import { UserContext, ContextSwitchOptions, ContextValidationResult, PlatformRole, Organization } from '@/types'
 import { prisma } from '@/lib/prisma'
 import { BaseApiResponse } from '@/types'
+import { transformDateFields } from '@/lib/utils/api.utils'
 
 export class ContextService {
   
@@ -31,7 +32,7 @@ export class ContextService {
 
       return {
         success: true,
-        data: context as UserContext
+        data: transformDateFields(context) as unknown as UserContext
       }
     } catch {
       return {
@@ -66,7 +67,7 @@ export class ContextService {
       ])
 
       const availableRoles = userRoles.map(ur => ur.role) as PlatformRole[]
-      const availableOrganizations = memberships.map(m => m.organization) as Organization[]
+      const availableOrganizations = memberships.map(m => transformDateFields(m.organization) as unknown as Organization)
 
       return {
         success: true,
@@ -126,7 +127,7 @@ export class ContextService {
 
       return {
         success: true,
-        data: context as UserContext,
+        data: transformDateFields(context) as unknown as UserContext,
         message: `Contexto cambiado a ${activeRole}${activeOrganizationId ? ' en organización' : ''}`
       }
     } catch {
@@ -212,7 +213,7 @@ export class ContextService {
 
       return {
         success: true,
-        data: context as UserContext,
+        data: transformDateFields(context) as unknown as UserContext,
         message: 'Contexto inicial creado exitosamente'
       }
     } catch {
