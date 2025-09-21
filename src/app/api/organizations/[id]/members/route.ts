@@ -3,6 +3,7 @@ import { PrismaOrganizationRepository } from '@/lib/repositories/organization.re
 import { createOrganizationService } from '@/lib/services/organization.service'
 import { OrganizationNotificationService } from '@/lib/services/organization-notification.service'
 import { NotificationService } from '@/lib/services/notification.service'
+import { NotificationProvider } from '@/lib/providers/notification.provider'
 import { inviteMemberSchema } from '@/lib/utils/validation.schemas'
 import {
   successResponse,
@@ -15,7 +16,8 @@ import {
 // Factory function para crear dependencias
 function createDependencies() {
   const organizationRepository = new PrismaOrganizationRepository()
-  const notificationService = new NotificationService()
+  const notificationProvider = new NotificationProvider()
+  const notificationService = new NotificationService(notificationProvider)
   const organizationNotificationService = new OrganizationNotificationService(notificationService)
   const organizationService = createOrganizationService(organizationRepository, organizationNotificationService)
   

@@ -17,7 +17,7 @@ export function usePermissions(organizationId?: string): UsePermissionsReturn {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchPermissions = async () => {
+  const fetchPermissions = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -41,7 +41,7 @@ export function usePermissions(organizationId?: string): UsePermissionsReturn {
     } finally {
       setLoading(false)
     }
-  }
+  }, [organizationId])
 
   const hasPermission = (permission: keyof UserPermissions): boolean => {
     if (!permissions) return false
