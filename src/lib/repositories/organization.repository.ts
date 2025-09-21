@@ -25,6 +25,19 @@ export class PrismaOrganizationRepository
     return prisma.organization
   }
 
+  // Métodos públicos requeridos por la interfaz que delegan a la clase base
+  async findById(id: string) {
+    return super.findById(id)
+  }
+
+  async update(id: string, data: Partial<CreateOrganizationFormData>) {
+    return super.update(id, data)
+  }
+
+  async delete(id: string) {
+    return super.delete(id)
+  }
+
   protected buildWhereClause(filters?: BaseSearchFilters): Prisma.OrganizationWhereInput {
     const where: Prisma.OrganizationWhereInput = {}
     
