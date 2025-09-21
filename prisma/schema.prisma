@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,41 +7,99 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Modelo para usuarios autenticados
+// ===== MODELO DE ORGANIZACIONES =====
+
+model Organization {
+  id        String            @id @default(uuid())
+  nombre    String
+  tipo      OrganizationType
+  activo    Boolean           @default(true)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  // Relaciones
+  profile   OrganizationProfile?
+  members   OrganizationMember[]
+  providers Provider[]
+  orders    Order[]
+
+  @@map("organizations")
+}
+
+model OrganizationProfile {
+  id             String       @id @default(uuid())
+  organizationId String       @unique
+  rfc            String?
+  direccion      String?
+  ciudad         String?
+  estado         String?
+  codigoPostal   String?
+  website        String?
+  descripcion    String?
+  logo           String?
+  telefono       String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  // Relaciones
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("organization_profiles")
+}
+
+model OrganizationMember {
+  id             String       @id @default(uuid())
+  organizationId String
+  userId         String
+  role           MemberRole
+  activo         Boolean      @default(true)
+  joinedAt       DateTime     @default(now())
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  // Relaciones
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@map("organization_members")
+}
+
+// ===== MODELO DE USUARIOS =====
+
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String    @id @default(uuid())
+  email     String    @unique
   nombre    String
   empresa   String?
   tipo      UserType
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  activo    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   // Relaciones
-  profile   UserProfile?
-  provider  Provider?
-  orders    Order[]
-  reviews   Review[]
+  profile       UserProfile?
+  memberships   OrganizationMember[]
+  orders        Order[]
   notifications Notification[]
 
   @@map("users")
 }
 
-// Perfil extendido del usuario
 model UserProfile {
-  id              String   @id @default(cuid())
-  userId          String   @unique
-  telefono        String?
-  direccion       String?
-  ciudad          String?
-  estado          String?
-  codigoPostal    String?
-  rfc             String?
-  website         String?
-  descripcion     String?
-  logo            String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  telefono     String?
+  direccion    String?
+  ciudad       String?
+  estado       String?
+  codigoPostal String?
+  rfc          String?
+  website      String?
+  descripcion  String?
+  logo         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   // Relaciones
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -52,45 +107,29 @@ model UserProfile {
   @@map("user_profiles")
 }
 
-// Newsletter subscribers
-model NewsletterSubscriber {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  nombre    String?
-  empresa   String?
-  activo    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// ===== MODELO DE PROVEEDORES =====
 
-  @@map("newsletter_subscribers")
-}
-
-// Proveedores de servicios logísticos
 model Provider {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  nombre      String
-  descripcion String?
-  servicios   Service[]
-  ubicaciones Location[]
-  documentos  Document[]
-  calificacion Float   @default(0)
-  totalReviews Int    @default(0)
-  activo      Boolean @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String                @id @default(uuid())
+  organizationId String?
+  nombre         String
+  descripcion    String?
+  activo         Boolean               @default(true)
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
 
   // Relaciones
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orders    Order[]
-  reviews   Review[]
+  organization Organization?         @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  servicios    ProviderService[]
+  ubicaciones  ProviderLocation[]
+  documentos   ProviderDocument[]
+  orders       Order[]
 
   @@map("providers")
 }
 
-// Servicios ofrecidos por proveedores
-model Service {
-  id          String   @id @default(cuid())
+model ProviderService {
+  id          String   @id @default(uuid())
   providerId  String
   nombre      String
   descripcion String?
@@ -103,16 +142,15 @@ model Service {
   // Relaciones
   provider Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
 
-  @@map("services")
+  @@map("provider_services")
 }
 
-// Ubicaciones de los proveedores
-model Location {
-  id         String   @id @default(cuid())
+model ProviderLocation {
+  id         String   @id @default(uuid())
   providerId String
   ciudad     String
   estado     String
-  pais       String   @default("México")
+  pais       String   @default("Mexico")
   activo     Boolean  @default(true)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -120,81 +158,66 @@ model Location {
   // Relaciones
   provider Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
 
-  @@map("locations")
+  @@map("provider_locations")
 }
 
-// Documentos de los proveedores
-model Document {
-  id         String   @id @default(cuid())
+model ProviderDocument {
+  id         String       @id @default(uuid())
   providerId String
   tipo       DocumentType
   nombre     String
   url        String
-  activo     Boolean  @default(true)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  verificado Boolean      @default(false)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
   // Relaciones
   provider Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
 
-  @@map("documents")
+  @@map("provider_documents")
 }
 
-// Órdenes de servicio
+// ===== MODELO DE ÓRDENES =====
+
 model Order {
-  id          String      @id @default(cuid())
-  userId      String
-  providerId  String?
-  servicio    String
-  descripcion String?
-  origen      String
-  destino     String
-  peso        Float?
-  volumen     Float?
-  estado      OrderStatus @default(PENDIENTE)
-  precio      Float?
-  fechaEnvio  DateTime?
-  fechaEntrega DateTime?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id             String      @id @default(uuid())
+  userId         String
+  organizationId String?
+  providerId     String?
+  servicio       String
+  descripcion    String?
+  origen         String
+  destino        String
+  peso           Float?
+  volumen        Float?
+  precio         Float?
+  estado         OrderStatus @default(PENDIENTE)
+  fechaEnvio     DateTime?
+  fechaEntrega   DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 
   // Relaciones
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  provider Provider? @relation(fields: [providerId], references: [id])
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  provider     Provider?     @relation(fields: [providerId], references: [id], onDelete: SetNull)
 
   @@map("orders")
 }
 
-// Reviews y calificaciones
-model Review {
-  id         String   @id @default(cuid())
-  userId     String
-  providerId String
-  orderId    String?
-  calificacion Int
-  comentario String?
-  activo     Boolean  @default(true)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+// ===== MODELO DE NOTIFICACIONES =====
 
-  // Relaciones
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  provider Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
-
-  @@map("reviews")
-}
-
-// Notificaciones del sistema
 model Notification {
-  id        String   @id @default(cuid())
-  userId    String
-  tipo      NotificationType
-  titulo    String
-  mensaje   String
-  datos     Json?
-  leida     Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String            @id @default(uuid())
+  userId      String
+  titulo      String
+  mensaje     String
+  tipo        NotificationType
+  leida       Boolean           @default(false)
+  accionUrl   String?
+  accionTexto String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
 
   // Relaciones
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -202,20 +225,39 @@ model Notification {
   @@map("notifications")
 }
 
-// Enums
+// ===== MODELO DE NEWSLETTER =====
+
+model NewsletterSubscriber {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  nombre    String?
+  empresa   String?
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("newsletter_subscribers")
+}
+
+// ===== ENUMS =====
+
+enum OrganizationType {
+  CLIENTE
+  PROVEEDOR
+  MIXTO
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MANAGER
+  EMPLOYEE
+}
+
 enum UserType {
   CLIENTE
   PROVEEDOR
   ADMIN
-}
-
-enum OrderStatus {
-  PENDIENTE
-  ACEPTADA
-  EN_PROCESO
-  EN_TRANSITO
-  ENTREGADA
-  CANCELADA
 }
 
 enum DocumentType {
@@ -227,9 +269,21 @@ enum DocumentType {
   OTRO
 }
 
+enum OrderStatus {
+  PENDIENTE
+  CONFIRMADA
+  EN_PROCESO
+  EN_TRANSITO
+  ENTREGADA
+  CANCELADA
+}
+
 enum NotificationType {
-  ORDEN
-  ESTADO
-  SISTEMA
-  PROMOCION
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+  INVITATION
+  ROLE_CHANGE
+  ORDER_UPDATE
 }

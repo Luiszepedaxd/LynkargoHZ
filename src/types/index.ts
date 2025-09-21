@@ -1,14 +1,89 @@
-// ===== TIPOS BASE =====
+// ===== ORGANIZACIÓN =====
 
-// Tipos de usuario (consolidados con Prisma)
+export interface Organization {
+  id: string
+  nombre: string
+  tipo: OrganizationType
+  activo: boolean
+  createdAt: string
+  updatedAt: string
+  profile?: OrganizationProfile
+  members?: OrganizationMember[]
+  providers?: Provider[]
+  orders?: Order[]
+}
+
+export interface OrganizationProfile {
+  id: string
+  organizationId: string
+  rfc?: string
+  direccion?: string
+  ciudad?: string
+  estado?: string
+  codigoPostal?: string
+  website?: string
+  descripcion?: string
+  logo?: string
+  telefono?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface OrganizationMember {
+  id: string
+  organizationId: string
+  userId: string
+  role: MemberRole
+  activo: boolean
+  joinedAt: string
+  createdAt: string
+  updatedAt: string
+  user?: User
+  organization?: Organization
+}
+
+// Tipos de formularios para organizaciones (importados desde validation.schemas)
+export type CreateOrganizationFormData = {
+  nombre: string
+  tipo: OrganizationType
+  profile?: {
+    rfc?: string
+    direccion?: string
+    ciudad?: string
+    estado?: string
+    codigoPostal?: string
+    telefono?: string
+    website?: string
+    descripcion?: string
+    logo?: string
+  }
+}
+
+export type InviteMemberFormData = {
+  organizationId: string
+  email: string
+  nombre: string
+  role: MemberRole
+}
+
+export type UpdateMemberRoleData = {
+  memberId: string
+  role: MemberRole
+}
+
+// ===== USUARIOS =====
+
 export interface User {
   id: string
   email: string
   nombre: string
-  empresa?: string
-  tipo: UserType
   createdAt: string
   updatedAt: string
+  profile?: UserProfile
+  memberships?: OrganizationMember[]
+  orders?: Order[]
+  reviews?: Review[]
+  notifications?: Notification[]
 }
 
 export interface UserProfile {
@@ -19,10 +94,9 @@ export interface UserProfile {
   ciudad?: string
   estado?: string
   codigoPostal?: string
-  rfc?: string
   website?: string
   descripcion?: string
-  logo?: string
+  avatar?: string
   createdAt: string
   updatedAt: string
 }
@@ -33,17 +107,18 @@ export interface AuthUser {
   email: string
   user_metadata?: {
     nombre?: string
-    nombre_empresa?: string
-    tipo_usuario?: string
+    organization_name?: string
+    organization_type?: string
   }
 }
 
 // ===== ENUMS =====
 
-export type UserType = 'CLIENTE' | 'PROVEEDOR' | 'ADMIN'
+export type OrganizationType = 'CLIENTE' | 'PROVEEDOR' | 'MIXTO'
+export type MemberRole = 'OWNER' | 'ADMIN' | 'MANAGER' | 'EMPLOYEE'
 export type OrderStatus = 'PENDIENTE' | 'ACEPTADA' | 'EN_PROCESO' | 'EN_TRANSITO' | 'ENTREGADA' | 'CANCELADA'
 export type DocumentType = 'RFC' | 'ACTA_CONSTITUTIVA' | 'COMPROBANTE_DOMICILIO' | 'SEGURO' | 'LICENCIA' | 'OTRO'
-export type NotificationType = 'ORDEN' | 'ESTADO' | 'SISTEMA' | 'PROMOCION'
+export type NotificationType = 'ORDEN' | 'ESTADO' | 'SISTEMA' | 'PROMOCION' | 'INVITACION'
 
 // ===== TIPOS DE FORMULARIOS =====
 
@@ -56,8 +131,30 @@ export interface RegisterFormData {
   nombre: string
   email: string
   password: string
-  empresa?: string
-  tipo: 'cliente' | 'proveedor'
+  organizationName: string
+  organizationType: OrganizationType
+}
+
+export interface CreateOrganizationFormData {
+  nombre: string
+  tipo: OrganizationType
+  profile?: {
+    rfc?: string
+    direccion?: string
+    ciudad?: string
+    estado?: string
+    codigoPostal?: string
+    website?: string
+    descripcion?: string
+    telefono?: string
+  }
+}
+
+export interface InviteMemberFormData {
+  organizationId: string
+  email: string
+  nombre: string
+  role: MemberRole
 }
 
 export interface NewsletterFormData {
@@ -106,7 +203,7 @@ export interface NotificationState {
 
 export interface Provider {
   id: string
-  userId: string
+  organizationId: string
   nombre: string
   descripcion?: string
   calificacion: number
@@ -114,6 +211,12 @@ export interface Provider {
   activo: boolean
   createdAt: string
   updatedAt: string
+  organization?: Organization
+  services?: Service[]
+  locations?: Location[]
+  documents?: Document[]
+  orders?: Order[]
+  reviews?: Review[]
 }
 
 export interface Service {
@@ -131,6 +234,7 @@ export interface Service {
 export interface Order {
   id: string
   userId: string
+  organizationId?: string
   providerId?: string
   servicio: string
   descripcion?: string
@@ -144,4 +248,7 @@ export interface Order {
   fechaEntrega?: string
   createdAt: string
   updatedAt: string
+  user?: User
+  organization?: Organization
+  provider?: Provider
 }

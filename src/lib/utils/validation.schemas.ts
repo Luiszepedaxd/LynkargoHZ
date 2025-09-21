@@ -16,9 +16,9 @@ export const registerSchema = z.object({
   nombre: nameSchema,
   email: emailSchema,
   password: passwordSchema,
-  empresa: optionalStringSchema,
-  tipo: z.enum(['cliente', 'proveedor'], {
-    required_error: 'Must select user type'
+  organizationName: nameSchema,
+  organizationType: z.enum(['CLIENTE', 'PROVEEDOR', 'MIXTO'], {
+    required_error: 'Debe seleccionar el tipo de organización'
   })
 })
 
@@ -48,8 +48,44 @@ export const createUserSchema = z.object({
 
 export const updateUserSchema = createUserSchema.partial()
 
+// ===== SCHEMAS PARA ORGANIZACIONES =====
+
+export const createOrganizationSchema = z.object({
+  nombre: nameSchema,
+  tipo: z.enum(['CLIENTE', 'PROVEEDOR', 'MIXTO'], {
+    required_error: 'Debe seleccionar el tipo de organización'
+  }),
+  profile: z.object({
+    rfc: optionalStringSchema,
+    direccion: optionalStringSchema,
+    ciudad: optionalStringSchema,
+    estado: optionalStringSchema,
+    codigoPostal: optionalStringSchema,
+    telefono: optionalStringSchema,
+    website: urlSchema,
+    descripcion: optionalStringSchema,
+    logo: optionalStringSchema
+  }).optional()
+})
+
+export const inviteMemberSchema = z.object({
+  organizationId: z.string().min(1, 'ID de organización requerido'),
+  email: emailSchema,
+  nombre: nameSchema,
+  role: z.enum(['ADMIN', 'MANAGER', 'EMPLOYEE'], {
+    required_error: 'Debe seleccionar un rol'
+  })
+})
+
+export const updateMemberRoleSchema = z.object({
+  memberId: z.string().uuid('ID de miembro inválido'),
+  role: z.enum(['ADMIN', 'MANAGER', 'EMPLOYEE'], {
+    required_error: 'Debe seleccionar un rol válido'
+  })
+})
+
 export const createProviderSchema = z.object({
-  userId: z.string().min(1, 'User ID required'),
+  organizationId: z.string().min(1, 'ID de organización requerido'),
   nombre: nameSchema,
   descripcion: optionalStringSchema,
   servicios: z.array(z.object({
@@ -66,12 +102,13 @@ export const createProviderSchema = z.object({
   documentos: z.array(z.object({
     tipo: z.enum(['RFC', 'ACTA_CONSTITUTIVA', 'COMPROBANTE_DOMICILIO', 'SEGURO', 'LICENCIA', 'OTRO']),
     nombre: nameSchema,
-    url: z.string().url('Invalid document URL')
+    url: z.string().url('URL de documento inválida')
   })).optional()
 })
 
 export const createOrderSchema = z.object({
-  userId: z.string().min(1, 'User ID required'),
+  userId: z.string().min(1, 'ID de usuario requerido'),
+  organizationId: optionalStringSchema,
   providerId: optionalStringSchema,
   servicio: nameSchema,
   descripcion: optionalStringSchema,
@@ -84,10 +121,15 @@ export const createOrderSchema = z.object({
   fechaEntrega: z.string().datetime().optional()
 })
 
+// ===== TIPOS TYPESCRIPT =====
+
 export type LoginFormData = z.infer<typeof loginSchema>
 export type RegisterFormData = z.infer<typeof registerSchema>
 export type NewsletterFormData = z.infer<typeof newsletterSchema>
 export type CreateUserData = z.infer<typeof createUserSchema>
 export type UpdateUserData = z.infer<typeof updateUserSchema>
+export type CreateOrganizationData = z.infer<typeof createOrganizationSchema>
+export type InviteMemberData = z.infer<typeof inviteMemberSchema>
+export type UpdateMemberRoleData = z.infer<typeof updateMemberRoleSchema>
 export type CreateProviderData = z.infer<typeof createProviderSchema>
 export type CreateOrderData = z.infer<typeof createOrderSchema>

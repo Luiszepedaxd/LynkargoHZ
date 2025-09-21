@@ -1,44 +1,159 @@
-import { ApiResponse, PaginationParams, ApiListResponse } from '@/types'
-import { HttpClient } from '@/lib/utils/http.utils'
+import { prisma } from '@/lib/prisma'
+import { 
+  BaseApiResponse, 
+  BasePaginatedResponse, 
+  BaseSearchFilters 
+} from '@/lib/interfaces/base.interface'
+import { 
+  successResponse, 
+  errorResponse, 
+  paginatedResponse, 
+  handleGenericError,
+  extractPaginationParams,
+  calculatePagination 
+} from '@/lib/utils/api.utils'
 
-export interface Repository<T, CreateData, UpdateData> {
-  findById(id: string): Promise<ApiResponse<T>>
-  findAll(params?: PaginationParams): Promise<ApiListResponse<T>>
-  create(data: CreateData): Promise<ApiResponse<T>>
-  update(id: string, data: UpdateData): Promise<ApiResponse<T>>
-  delete(id: string): Promise<ApiResponse<void>>
-}
+// Clase base abstracta para repositorios siguiendo principios SOLID
+export abstract class BaseRepository<T, CreateData, UpdateData, Filters = BaseSearchFilters> {
+  protected abstract modelName: string
 
-export abstract class BaseRepository<T, CreateData, UpdateData> implements Repository<T, CreateData, UpdateData> {
-  protected httpClient: HttpClient
+  // Método abstracto que debe ser implementado por las clases hijas
+  protected abstract getPrismaModel(): any
 
-  constructor(protected baseEndpoint: string) {
-    this.httpClient = new HttpClient('/api')
+  // Métodos comunes reutilizables
+  protected async findById(id: string, include?: any): Promise<BaseApiResponse<T>> {
+    try {
+      const model = this.getPrismaModel()
+      const result = await model.findUnique({
+        where: { id },
+        include
+      })
+
+      if (!result) {
+        return errorResponse(`${this.modelName} no encontrado`, 404)
+      }
+
+      return successResponse(result)
+    } catch (error) {
+      return handleGenericError(error, `${this.modelName}Repository.findById`)
+    }
   }
 
-  async findById(id: string): Promise<ApiResponse<T>> {
-    return this.httpClient.get<T>(`${this.baseEndpoint}/${id}`)
+  protected async findMany(
+    filters?: Filters, 
+    include?: any,
+    orderBy?: any
+  ): Promise<BasePaginatedResponse<T>> {
+    try {
+      const { page, limit, search } = extractPaginationParams(filters)
+      const { skip } = calculatePagination(page, limit, 0)
+
+      const model = this.getPrismaModel()
+      
+      // Construir filtros de búsqueda
+      const where = this.buildWhereClause(filters)
+
+      const [results, total] = await Promise.all([
+        model.findMany({
+          where,
+          include,
+          skip,
+          take: limit,
+          orderBy: orderBy || { createdAt: 'desc' }
+        }),
+        model.count({ where })
+      ])
+
+      const pagination = calculatePagination(page, limit, total).pagination
+
+      return paginatedResponse(results, pagination)
+    } catch (error) {
+      return handleGenericError(error, `${this.modelName}Repository.findMany`)
+    }
   }
 
-  async findAll(params?: PaginationParams): Promise<ApiListResponse<T>> {
-    const searchParams = new URLSearchParams()
-    if (params?.page) searchParams.set('page', params.page.toString())
-    if (params?.limit) searchParams.set('limit', params.limit.toString())
-    if (params?.search) searchParams.set('search', params.search)
+  protected async create(data: CreateData, include?: any): Promise<BaseApiResponse<T>> {
+    try {
+      const model = this.getPrismaModel()
+      const result = await model.create({
+        data,
+        include
+      })
 
-    const response = await this.httpClient.get<T[]>(`${this.baseEndpoint}?${searchParams}`)
-    return response as ApiListResponse<T>
+      return successResponse(result, `${this.modelName} creado exitosamente`)
+    } catch (error) {
+      return handleGenericError(error, `${this.modelName}Repository.create`)
+    }
   }
 
-  async create(data: CreateData): Promise<ApiResponse<T>> {
-    return this.httpClient.post<T>(this.baseEndpoint, data)
+  protected async update(
+    id: string, 
+    data: Partial<UpdateData>, 
+    include?: any
+  ): Promise<BaseApiResponse<T>> {
+    try {
+      const model = this.getPrismaModel()
+      const result = await model.update({
+        where: { id },
+        data,
+        include
+      })
+
+      return successResponse(result, `${this.modelName} actualizado exitosamente`)
+    } catch (error) {
+      return handleGenericError(error, `${this.modelName}Repository.update`)
+    }
   }
 
-  async update(id: string, data: UpdateData): Promise<ApiResponse<T>> {
-    return this.httpClient.put<T>(`${this.baseEndpoint}/${id}`, data)
+  protected async delete(id: string): Promise<BaseApiResponse<void>> {
+    try {
+      const model = this.getPrismaModel()
+      await model.delete({
+        where: { id }
+      })
+
+      return successResponse(undefined, `${this.modelName} eliminado exitosamente`)
+    } catch (error) {
+      return handleGenericError(error, `${this.modelName}Repository.delete`)
+    }
   }
 
-  async delete(id: string): Promise<ApiResponse<void>> {
-    return this.httpClient.delete<void>(`${this.baseEndpoint}/${id}`)
+  // Método abstracto para construir cláusulas WHERE específicas
+  protected abstract buildWhereClause(filters?: Filters): any
+
+  // Método para verificar existencia de un registro
+  protected async exists(id: string): Promise<boolean> {
+    try {
+      const model = this.getPrismaModel()
+      const count = await model.count({
+        where: { id }
+      })
+      return count > 0
+    } catch (error) {
+      return false
+    }
+  }
+
+  // Método para contar registros con filtros
+  protected async count(filters?: Filters): Promise<number> {
+    try {
+      const model = this.getPrismaModel()
+      const where = this.buildWhereClause(filters)
+      return await model.count({ where })
+    } catch (error) {
+      return 0
+    }
+  }
+
+  // Método para operaciones en transacción
+  protected async executeTransaction<R>(
+    callback: (tx: any) => Promise<R>
+  ): Promise<BaseApiResponse<R>> {
+    try {
+      const result = await prisma.$transaction(callback)
+      return successResponse(result)
+    } catch (error) {
+      return handleGenericError(error, `${this.modelName}Repository.transaction`)
+    }
   }
 }
