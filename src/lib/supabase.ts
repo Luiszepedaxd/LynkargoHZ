@@ -6,10 +6,8 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOi
 // Cliente principal para operaciones autenticadas
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-// Cliente administrativo con service_role para operaciones de registro
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'sb_secret_AhQAzgLbm5YdTiJtwgB0jw_YDP39178'
-
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+// Cliente administrativo - usar la misma clave anon pero con configuración especial
+export const supabaseAdmin = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: false,
     persistSession: false
