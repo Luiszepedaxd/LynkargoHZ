@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { PrismaOrganizationRepository } from '@/lib/repositories/organization.repository'
 import { createOrganizationService } from '@/lib/services/organization.service'
 import { OrganizationNotificationService } from '@/lib/services/organization-notification.service'
@@ -11,12 +11,6 @@ import {
   handleGenericError,
   extractPaginationParams
 } from '@/lib/utils/api.utils'
-
-interface RouteParams {
-  params: {
-    id: string
-  }
-}
 
 // Factory function para crear dependencias
 function createDependencies() {
@@ -31,7 +25,7 @@ function createDependencies() {
 // GET - Obtener miembros de la organización
 export async function GET(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { searchParams } = new URL(request.url)
@@ -40,8 +34,9 @@ export async function GET(
     // TODO: Obtener userId del token de autenticación
     // const userId = 'temp-user-id' // Reemplazar con autenticación real
 
+    const resolvedParams = await params
     const { organizationService } = createDependencies()
-    const result = await organizationService.getOrganizationMembers(params.id, { page, limit, search })
+    const result = await organizationService.getOrganizationMembers(resolvedParams.id, { page, limit, search })
 
     if (!result.success) {
       return errorResponse(result.error || 'Error al obtener miembros', 500)
@@ -57,15 +52,17 @@ export async function GET(
 // POST - Invitar nuevo miembro
 export async function POST(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const body = await request.json()
     
+    const resolvedParams = await params
+    
     // Validar datos de entrada
     const validatedData = inviteMemberSchema.parse({
       ...body,
-      organizationId: params.id
+      organizationId: resolvedParams.id
     })
     
     // TODO: Obtener userId del token de autenticación
