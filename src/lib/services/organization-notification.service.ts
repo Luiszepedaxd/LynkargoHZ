@@ -2,6 +2,7 @@ import { OrganizationNotificationInterface } from '@/lib/interfaces/organization
 import { BaseApiResponse } from '@/lib/interfaces/base.interface'
 import { OrganizationMember } from '@/types'
 import { NotificationService } from './notification.service'
+import { NotificationType } from '@prisma/client'
 
 export class OrganizationNotificationService implements OrganizationNotificationInterface {
   constructor(private notificationService: NotificationService) {}
@@ -10,7 +11,7 @@ export class OrganizationNotificationService implements OrganizationNotification
     try {
       await this.notificationService.create({
         userId: memberData.userId,
-        tipo: 'INVITATION',
+        tipo: 'INVITATION' as NotificationType,
         titulo: 'Invitación a organización',
         mensaje: `Has sido invitado a unirte a la organización ${memberData.organization?.nombre}`,
         accionUrl: `/organizations/${memberData.organizationId}`,
@@ -33,7 +34,7 @@ export class OrganizationNotificationService implements OrganizationNotification
     try {
       await this.notificationService.create({
         userId: memberData.userId,
-        tipo: 'ROLE_CHANGE',
+        tipo: 'ROLE_CHANGE' as NotificationType,
         titulo: 'Cambio de rol en organización',
         mensaje: `Tu rol en la organización ${memberData.organization?.nombre} ha sido cambiado a ${newRole}`,
         accionUrl: `/organizations/${memberData.organizationId}`,
@@ -56,7 +57,7 @@ export class OrganizationNotificationService implements OrganizationNotification
     try {
       await this.notificationService.create({
         userId,
-        tipo: 'WARNING',
+        tipo: 'WARNING' as NotificationType,
         titulo: 'Removido de organización',
         mensaje: `Has sido removido de la organización ${organizationName}`,
         accionTexto: 'Ver organizaciones'

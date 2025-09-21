@@ -1,10 +1,11 @@
 import { ApiResponse } from '@/types'
 import { NotificationProvider } from '@/lib/providers/notification.provider'
 import { prisma } from '@/lib/prisma'
+import { NotificationType } from '@prisma/client'
 
 interface CreateNotificationData {
   userId: string
-  tipo: string
+  tipo: NotificationType
   titulo: string
   mensaje: string
   accionUrl?: string
@@ -32,7 +33,7 @@ export class NotificationService {
       await prisma.notification.create({
         data: {
           userId: data.userId,
-          tipo: data.tipo as any,
+          tipo: data.tipo,
           titulo: data.titulo,
           mensaje: data.mensaje,
           accionUrl: data.accionUrl,
@@ -42,7 +43,7 @@ export class NotificationService {
       })
 
       return { success: true, message: 'Notificación creada exitosamente' }
-    } catch (error) {
+    } catch {
       return { 
         success: false, 
         error: 'Error al crear notificación' 
