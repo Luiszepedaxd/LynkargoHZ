@@ -24,6 +24,7 @@ model User {
   orders          Order[]
   notifications   Notification[]
   userRoles       UserRole[]
+  contexts        UserContext[]
 
   @@map("users")
 }
@@ -62,6 +63,7 @@ model Organization {
   members   OrganizationMember[]
   providers Provider[]
   orders    Order[]
+  contexts  UserContext[]
 
   @@map("organizations")
 }
