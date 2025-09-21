@@ -213,7 +213,7 @@ export class PrismaOrganizationRepository implements OrganizationRepositoryInter
 
       const pagination = this.calculatePagination(page, limit, total).pagination
 
-      const transformedMembers = members.map(member => transformDateFields(member)) as OrganizationMember[]
+      const transformedMembers = members.map(member => transformDateFields(member)) as unknown as OrganizationMember[]
       return createPaginatedResponse(transformedMembers, pagination)
     } catch (error) {
       return handleRepositoryError(error, 'OrganizationRepository.getMembers')
@@ -289,7 +289,7 @@ export class PrismaOrganizationRepository implements OrganizationRepositoryInter
         }
       })
 
-      const transformedMembership = transformDateFields(membership) as OrganizationMember
+      const transformedMembership = transformDateFields(membership) as unknown as OrganizationMember
       return createSuccessResponse(transformedMembership, 'Invitación enviada exitosamente')
     } catch (error) {
       return handleRepositoryError(error, 'OrganizationRepository.inviteMember')
@@ -326,7 +326,7 @@ export class PrismaOrganizationRepository implements OrganizationRepositoryInter
         }
       })
 
-      const transformedMembership = transformDateFields(membership) as OrganizationMember
+      const transformedMembership = transformDateFields(membership) as unknown as OrganizationMember
       return createSuccessResponse(transformedMembership, 'Rol actualizado exitosamente')
     } catch (error) {
       return handleRepositoryError(error, 'OrganizationRepository.updateMemberRole')
@@ -383,7 +383,7 @@ export class PrismaOrganizationRepository implements OrganizationRepositoryInter
         }
       })
 
-      const transformedMembership = transformDateFields(updatedMembership) as OrganizationMember
+      const transformedMembership = transformDateFields(updatedMembership) as unknown as OrganizationMember
       return createSuccessResponse(transformedMembership, 'Invitación aceptada exitosamente')
     } catch (error) {
       return handleRepositoryError(error, 'OrganizationRepository.acceptInvitation')
