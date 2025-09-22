@@ -110,7 +110,7 @@ export function createSuccessResponse<T>(
 
 export function createErrorResponse(
   message: string,
-  _error?: string
+  _?: string
 ): BaseApiResponse<never> {
   return {
     success: false,

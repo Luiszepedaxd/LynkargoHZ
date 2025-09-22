@@ -8,7 +8,7 @@ import RegisterModal from './RegisterModal'
 import Notification from './Notification'
 
 export default function Header() {
-  const { currentUser, logout, isAuthenticated, login, register } = useAuth()
+  const { currentUser, logout, isAuthenticated, login } = useAuth()
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
   const [notification, setNotification] = useState<{

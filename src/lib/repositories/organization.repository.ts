@@ -48,7 +48,7 @@ export class PrismaOrganizationRepository implements OrganizationRepositoryInter
   async update(id: string, data: Partial<CreateOrganizationFormData>): Promise<BaseApiResponse<Organization>> {
     try {
       // Extraer datos del perfil si existe
-      const { profile: _profile, ...organizationData } = data
+      const { profile: _, ...organizationData } = data
       
       const result = await prisma.organization.update({
         where: { id },

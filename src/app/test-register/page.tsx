@@ -75,7 +75,7 @@ export default function TestRegister() {
           overflow: 'auto',
           whiteSpace: 'pre-wrap'
         }}>
-          {result || 'Haz clic en "Probar Registro" para ver el resultado'}
+          {result || 'Haz clic en &quot;Probar Registro&quot; para ver el resultado'}
         </pre>
       </div>
       
@@ -83,7 +83,7 @@ export default function TestRegister() {
         <p><strong>Instrucciones:</strong></p>
         <ol>
           <li>Abre las Developer Tools (F12) y ve a la pestaña Console</li>
-          <li>Haz clic en "Probar Registro"</li>
+          <li>Haz clic en &quot;Probar Registro&quot;</li>
           <li>Observa los logs detallados en la consola</li>
           <li>Ve el resultado aquí abajo</li>
         </ol>
