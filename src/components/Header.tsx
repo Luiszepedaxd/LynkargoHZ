@@ -96,7 +96,7 @@ export default function Header() {
           try {
             console.log('Enviando datos de registro via API directa:', data)
             
-            const response = await fetch('/api/auth/register', {
+            const response = await fetch('/api/register-direct', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
