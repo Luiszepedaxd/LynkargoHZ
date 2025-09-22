@@ -13,6 +13,9 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
     autoRefreshToken: false,
     persistSession: false
+  },
+  db: {
+    schema: 'public'
   }
 })
 

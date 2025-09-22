@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     // Validar datos de entrada
     const validatedData = registerSchema.parse(body)
     
-    console.log('🔍 Iniciando registro con datos:', { 
+    console.log('Iniciando registro con datos:', { 
       email: validatedData.email, 
       nombre: validatedData.nombre,
       role: validatedData.initialRole 
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (authError) {
-      console.error('❌ Error en auth:', authError)
+      console.error('Error en auth:', authError)
       throw new Error('Error creating auth user: ' + authError.message)
     }
 
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       throw new Error('No user returned from auth creation')
     }
 
-    console.log('✅ Usuario auth creado:', authData.user.id)
+    console.log('Usuario auth creado:', authData.user.id)
 
     // 2. Insertar en tabla users usando supabaseAdmin
     const { error: userInsertError } = await supabaseAdmin
@@ -59,13 +59,13 @@ export async function POST(request: NextRequest) {
       }])
 
     if (userInsertError) {
-      console.error('❌ Error insertando en users:', userInsertError)
+      console.error('Error insertando en users:', userInsertError)
       // Cleanup: eliminar usuario de auth si falló la inserción
       await supabaseAdmin.auth.admin.deleteUser(authData.user.id)
       throw new Error('Error saving user data: ' + userInsertError.message)
     }
 
-    console.log('✅ Usuario insertado en tabla users')
+    console.log('Usuario insertado en tabla users')
 
     // 3. Crear rol de plataforma
     const { error: roleError } = await supabaseAdmin
@@ -77,9 +77,9 @@ export async function POST(request: NextRequest) {
       }])
 
     if (roleError) {
-      console.error('⚠️ Error creando rol (no crítico):', roleError)
+      console.error('Error creando rol (no critico):', roleError)
     } else {
-      console.log('✅ Rol de usuario creado')
+      console.log('Rol de usuario creado')
     }
 
     // 4. Crear contexto inicial
@@ -92,12 +92,12 @@ export async function POST(request: NextRequest) {
       }])
 
     if (contextError) {
-      console.error('⚠️ Error creando contexto (no crítico):', contextError)
+      console.error('Error creando contexto (no critico):', contextError)
     } else {
-      console.log('✅ Contexto de usuario creado')
+      console.log('Contexto de usuario creado')
     }
 
-    console.log('🎉 Registro completado exitosamente')
+    console.log('Registro completado exitosamente')
 
     return NextResponse.json({
       success: true,
@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
     }, { status: 201 })
 
   } catch (error) {
-    console.error('💥 Error general en registro:', error)
+    console.error('Error general en registro:', error)
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(

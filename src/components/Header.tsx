@@ -94,7 +94,7 @@ export default function Header() {
         onClose={() => setIsRegisterModalOpen(false)}
         onRegister={async (data) => {
           try {
-            console.log('🚀 Enviando datos de registro via API directa:', data)
+            console.log('Enviando datos de registro via API directa:', data)
             
             const response = await fetch('/api/auth/register', {
               method: 'POST',
@@ -105,7 +105,7 @@ export default function Header() {
             })
             
             const result = await response.json()
-            console.log('📥 Respuesta del servidor:', result)
+            console.log('Respuesta del servidor:', result)
             
             if (result.success) {
               setNotification({ 
@@ -116,7 +116,7 @@ export default function Header() {
               throw new Error(result.message || 'Error en el registro')
             }
           } catch (error) {
-            console.error('💥 Error en registro:', error)
+            console.error('Error en registro:', error)
             setNotification({ 
               message: error instanceof Error ? error.message : 'Error al crear la cuenta', 
               type: 'error' 
