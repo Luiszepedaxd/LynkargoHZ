@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 import { z } from 'zod'
+
+// Crear cliente admin directamente en la API route para asegurar que use las variables correctas
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://eddhbaovqdecryoanmik.supabase.co'
+const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVkZGhiYW92cWRlY3J5b2FubWlrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTMwNjk1NiwiZXhwIjoyMDcwODgyOTU2fQ.gKOAQFWrS7z7LOxr4HfHFNhx01mFJ1CIp3rcyQMQXrw'
+
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
+  }
+})
 
 // Schema de validación para registro
 const registerSchema = z.object({
@@ -24,6 +35,8 @@ export async function POST(request: NextRequest) {
       nombre: validatedData.nombre,
       role: validatedData.initialRole 
     })
+    
+    console.log('Usando service key:', supabaseServiceKey.substring(0, 20) + '...')
 
     // 1. Crear usuario en Supabase Auth
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
