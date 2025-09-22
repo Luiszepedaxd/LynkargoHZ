@@ -64,61 +64,39 @@ export async function POST(request: NextRequest) {
 
     console.log('Usuario auth creado con ID:', authData.user.id)
 
-    // Step 2: Insert into users table
-    console.log('Paso 2: Insertando en tabla users')
-    const { error: userError } = await supabase
-      .from('users')
-      .insert([{
-        id: authData.user.id,
-        email: validatedData.email,
-        nombre: validatedData.nombre,
-        telefono: validatedData.telefono || null,
-        activo: true
-      }])
+    // Step 2: Use custom SQL function (bypasses RLS permissions)
+    console.log('Paso 2: Usando funcion SQL personalizada register_user')
+    
+    const { data: functionResult, error: functionError } = await supabase.rpc('register_user', {
+      p_user_id: authData.user.id,
+      p_email: validatedData.email,
+      p_nombre: validatedData.nombre,
+      p_telefono: validatedData.telefono || null,
+      p_role: validatedData.initialRole
+    })
 
-    if (userError) {
-      console.error('Error insertando usuario:', userError)
-      // Cleanup auth user
+    if (functionError) {
+      console.error('Error llamando funcion register_user:', functionError)
       await supabase.auth.admin.deleteUser(authData.user.id)
       return NextResponse.json({
         success: false,
-        message: 'Error saving user: ' + userError.message
+        message: 'Error calling register function: ' + functionError.message
       }, { status: 500 })
     }
 
-    console.log('Usuario insertado en tabla users')
+    console.log('Resultado de funcion register_user:', functionResult)
 
-    // Step 3: Create user role
-    console.log('Paso 3: Creando rol de usuario')
-    const { error: roleError } = await supabase
-      .from('user_roles')
-      .insert([{
-        user_id: authData.user.id,
-        role: validatedData.initialRole,
-        activo: true
-      }])
-
-    if (roleError) {
-      console.error('Error creando rol:', roleError)
-    } else {
-      console.log('Rol creado exitosamente')
+    // Check if function returned success
+    if (!functionResult || !functionResult.success) {
+      console.error('Function returned error:', functionResult)
+      await supabase.auth.admin.deleteUser(authData.user.id)
+      return NextResponse.json({
+        success: false,
+        message: functionResult?.message || 'Unknown error from register function'
+      }, { status: 500 })
     }
 
-    // Step 4: Create user context
-    console.log('Paso 4: Creando contexto de usuario')
-    const { error: contextError } = await supabase
-      .from('user_contexts')
-      .insert([{
-        user_id: authData.user.id,
-        active_role: validatedData.initialRole,
-        last_switched_at: new Date().toISOString()
-      }])
-
-    if (contextError) {
-      console.error('Error creando contexto:', contextError)
-    } else {
-      console.log('Contexto creado exitosamente')
-    }
+    console.log('Datos de usuario insertados exitosamente via funcion SQL')
 
     console.log('=== REGISTRO COMPLETADO EXITOSAMENTE ===')
 
