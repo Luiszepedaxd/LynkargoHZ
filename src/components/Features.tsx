@@ -1,9 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { unsplash } from '@/lib/constants/unsplash'
 
 const ctaFormSchema = z.object({
   nombre: z.string().min(2, 'Nombre requerido'),
@@ -153,16 +155,28 @@ export default function Features() {
       {/* Qué es Lynkargo */}
       <section id="que-es" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-medium mb-4">
-              Qué es Lynkargo
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-xl bg-gray-100">
+              <Image
+                src={unsplash.aboutLogistics}
+                alt="Logística y almacenaje - operaciones 3PL"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                priority
+              />
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              Soluciones Logísticas Integrales para tu Empresa
-            </h2>
-            <p className="text-xl text-gray-600 leading-relaxed">
-              Somos intermediarios especializados en servicios 3PL. Gestionamos todas tus necesidades logísticas: desde almacenaje hasta distribución final, liberando a tu equipo para enfocarse en el core de tu negocio.
-            </p>
+            <div>
+              <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-medium mb-4">
+                Qué es Lynkargo
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                Soluciones Logísticas Integrales para tu Empresa
+              </h2>
+              <p className="text-xl text-gray-600 leading-relaxed">
+                Somos intermediarios especializados en servicios 3PL. Gestionamos todas tus necesidades logísticas: desde almacenaje hasta distribución final, liberando a tu equipo para enfocarse en el core de tu negocio.
+              </p>
+            </div>
           </div>
         </div>
       </section>

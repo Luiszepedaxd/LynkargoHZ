@@ -121,6 +121,8 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
               © {currentYear} Lynkargo. Todos los derechos reservados.
+              {' · '}
+              <a href="https://unsplash.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-300 transition-colors">Fotos: Unsplash</a>
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors duration-300">
