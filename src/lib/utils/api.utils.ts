@@ -1,4 +1,4 @@
-﻿// ===== UTILIDADES PARA APIs =====
+// ===== UTILIDADES PARA APIs =====
 // Elimina duplicación en manejo de respuestas y errores
 
 import { NextResponse } from 'next/server'
@@ -110,6 +110,7 @@ export function createSuccessResponse<T>(
 
 export function createErrorResponse(
   message: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- parámetro reservado para uso futuro
   _?: string
 ): BaseApiResponse<never> {
   return {
