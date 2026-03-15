@@ -34,7 +34,7 @@ export default function Header() {
               Qué es
             </Link>
             <Link href="#caracteristicas" className="text-gray-600 hover:text-blue-600 transition-colors">
-              Características
+              Servicios
             </Link>
             <Link href="#contacto" className="text-gray-600 hover:text-blue-600 transition-colors">
               Contacto

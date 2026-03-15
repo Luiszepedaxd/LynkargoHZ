@@ -8,9 +8,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Lynkargo - Conectando la Logística del Futuro",
-  description: "Plataforma B2B que conecta empresas con necesidades logísticas con proveedores de transporte y almacenamiento. Próximamente.",
-  keywords: "logística, transporte, almacenamiento, B2B, México, proveedores, servicios logísticos",
+  title: "Lynkargo - Intermediación Logística 3PL | Almacenaje y Transporte en México",
+  description: "Lynkargo ofrece servicios integrales de intermediación logística 3PL: almacenaje, transporte nacional e internacional, fulfillment y distribución. Soluciones personalizadas para tu empresa en México.",
+  keywords: "lynkargo, logística 3PL, almacenaje México, transporte de carga, fulfillment, distribución, intermediación logística, warehouse, fletes nacionales",
   authors: [{ name: "Lynkargo" }],
   creator: "Lynkargo",
   publisher: "Lynkargo",
@@ -18,16 +18,16 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "es_MX",
-    url: "https://lynkargo.com",
-    title: "Lynkargo - Conectando la Logística del Futuro",
-    description: "La primera plataforma B2B que une empresas con proveedores de transporte y almacenamiento mediante tecnología inteligente de matching automático.",
+    url: "https://www.lynkargo.com",
+    title: "Lynkargo - Intermediación Logística 3PL | Almacenaje y Transporte en México",
+    description: "Lynkargo ofrece servicios integrales de intermediación logística 3PL: almacenaje, transporte nacional e internacional, fulfillment y distribución. Soluciones personalizadas para tu empresa en México.",
     siteName: "Lynkargo",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Lynkargo - Plataforma Logística B2B"
+        alt: "Lynkargo - Intermediación Logística 3PL"
       }
     ]
   },
@@ -35,8 +35,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@lynkargo",
     creator: "@lynkargo",
-    title: "Lynkargo - Conectando la Logística del Futuro",
-    description: "La primera plataforma B2B que une empresas con proveedores de transporte y almacenamiento mediante tecnología inteligente de matching automático.",
+    title: "Lynkargo - Intermediación Logística 3PL | Almacenaje y Transporte en México",
+    description: "Lynkargo ofrece servicios integrales de intermediación logística 3PL: almacenaje, transporte nacional e internacional, fulfillment y distribución. Soluciones personalizadas para tu empresa en México.",
     images: ["/og-image.jpg"]
   },
   icons: {
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
   },
   manifest: "/site.webmanifest",
   alternates: {
-    canonical: "https://lynkargo.com"
+    canonical: "https://www.lynkargo.com"
   }
 };
 
@@ -63,6 +63,29 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const schemaOrg = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Lynkargo",
+    "alternateName": "Lynkargo Logistics",
+    "url": "https://www.lynkargo.com",
+    "logo": "https://www.lynkargo.com/logo.png",
+    "description": "Intermediación logística 3PL - Almacenaje, transporte y distribución en México",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Guadalajara",
+      "addressRegion": "Jalisco",
+      "addressCountry": "MX"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 20.6597,
+      "longitude": -103.3496
+    },
+    "areaServed": "MX",
+    "serviceType": ["3PL Logistics", "Warehousing", "Transportation", "Fulfillment"]
+  };
+
   return (
     <html lang="es">
       <head>
@@ -70,6 +93,10 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }}
+        />
       </head>
       <body
         className={`${inter.variable} font-sans antialiased`}

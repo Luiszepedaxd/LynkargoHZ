@@ -12,9 +12,9 @@ interface StructuredDataProps {
 export default function StructuredData({
   type = 'Organization',
   name = 'Lynkargo',
-  description = 'La primera plataforma B2B que une empresas con proveedores de transporte y almacenamiento mediante tecnología inteligente de matching automático.',
-  url = 'https://lynkargo.com',
-  logo = 'https://lynkargo.com/logo.png',
+  description = 'Intermediación logística 3PL - Almacenaje, transporte y distribución en México.',
+  url = 'https://www.lynkargo.com',
+  logo = 'https://www.lynkargo.com/logo.png',
   author = 'Lynkargo',
   publishedTime,
   modifiedTime
@@ -31,12 +31,21 @@ export default function StructuredData({
     if (type === 'Organization') {
       return {
         ...baseData,
+        "alternateName": "Lynkargo Logistics",
         "logo": logo,
         "address": {
           "@type": "PostalAddress",
-          "addressCountry": "MX",
-          "addressRegion": "México"
+          "addressLocality": "Guadalajara",
+          "addressRegion": "Jalisco",
+          "addressCountry": "MX"
         },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 20.6597,
+          "longitude": -103.3496
+        },
+        "areaServed": "MX",
+        "serviceType": ["3PL Logistics", "Warehousing", "Transportation", "Fulfillment"],
         "contactPoint": {
           "@type": "ContactPoint",
           "contactType": "customer service",

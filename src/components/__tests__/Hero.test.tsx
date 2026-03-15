@@ -2,7 +2,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import Hero from '../Hero'
 
-// Mock del hook useAuth
 jest.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({
     user: null,
@@ -13,7 +12,6 @@ jest.mock('../../hooks/useAuth', () => ({
   }),
 }))
 
-// Mock de fetch para la API
 global.fetch = jest.fn()
 
 describe('Hero Component', () => {
@@ -23,129 +21,75 @@ describe('Hero Component', () => {
 
   it('renders hero section with title and subtitle', () => {
     render(<Hero />)
-    
-    expect(screen.getByText(/Conectando la Logística del Futuro/i)).toBeInTheDocument()
-    expect(screen.getByText(/La primera plataforma B2B/i)).toBeInTheDocument()
+    expect(screen.getByText(/Intermediación logística integral/i)).toBeInTheDocument()
+    expect(screen.getByText(/Tu socio estratégico en soluciones 3PL/i)).toBeInTheDocument()
+    expect(screen.getByText(/Conectamos tu empresa con las mejores soluciones de almacenaje, transporte y logística en México/i)).toBeInTheDocument()
   })
 
   it('renders call-to-action buttons', () => {
     render(<Hero />)
-    
-    expect(screen.getByText(/Comenzar Ahora/i)).toBeInTheDocument()
-    expect(screen.getByText(/Ver Demo/i)).toBeInTheDocument()
+    expect(screen.getByText(/Solicitar Cotización/i)).toBeInTheDocument()
+    expect(screen.getByText(/Conocer Más/i)).toBeInTheDocument()
   })
 
-  it('renders newsletter form', () => {
+  it('opens contact modal when clicking Solicitar Cotización', () => {
     render(<Hero />)
-    
-    expect(screen.getByPlaceholderText(/tu@email.com/i)).toBeInTheDocument()
-    expect(screen.getByText(/Suscribirse/i)).toBeInTheDocument()
+    const contactModal = document.getElementById('contact-modal')
+    expect(contactModal?.classList.contains('hidden')).toBe(true)
+    fireEvent.click(screen.getByText(/Solicitar Cotización/i))
+    expect(contactModal?.classList.contains('hidden')).toBe(false)
+  })
+
+  it('renders contact form in modal', () => {
+    render(<Hero />)
+    fireEvent.click(screen.getByText(/Solicitar Cotización/i))
+    expect(screen.getByLabelText(/Nombre completo/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Empresa/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Email corporativo/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Teléfono/i)).toBeInTheDocument()
+    expect(screen.getByText(/Enviar Solicitud/i)).toBeInTheDocument()
   })
 
   it('renders statistics section', () => {
     render(<Hero />)
-    
-    expect(screen.getByText(/500\+/i)).toBeInTheDocument()
-    expect(screen.getByText(/Empresas/i)).toBeInTheDocument()
-    expect(screen.getByText(/1000\+/i)).toBeInTheDocument()
-    expect(screen.getByText(/Envíos/i)).toBeInTheDocument()
-    expect(screen.getByText(/50\+/i)).toBeInTheDocument()
-    expect(screen.getByText(/Ciudades/i)).toBeInTheDocument()
+    expect(screen.getByText(/\+25/)).toBeInTheDocument()
+    expect(screen.getByText(/Años de Experiencia Combinada/i)).toBeInTheDocument()
+    expect(screen.getByText(/\+50/)).toBeInTheDocument()
+    expect(screen.getByText(/Proveedores Certificados en Red/i)).toBeInTheDocument()
+    expect(screen.getByText(/15\+/)).toBeInTheDocument()
+    expect(screen.getByText(/Estados de Cobertura/i)).toBeInTheDocument()
+    expect(screen.getByText(/99\.5%/)).toBeInTheDocument()
+    expect(screen.getByText(/Tasa de Satisfacción/i)).toBeInTheDocument()
   })
 
-  it('handles newsletter form submission successfully', async () => {
+  it('handles contact form submission successfully', async () => {
     const mockFetch = fetch as jest.MockedFunction<typeof fetch>
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ success: true, message: 'Suscripción exitosa' }),
+      json: async () => ({ success: true, message: 'Gracias por tu solicitud.' }),
     } as Response)
 
     render(<Hero />)
-    
-    const emailInput = screen.getByPlaceholderText(/tu@email.com/i)
-    const submitButton = screen.getByText(/Suscribirse/i)
-    
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
-    fireEvent.click(submitButton)
-    
+    fireEvent.click(screen.getByText(/Solicitar Cotización/i))
+    fireEvent.change(screen.getByPlaceholderText(/Tu nombre/), { target: { value: 'Juan Pérez' } })
+    fireEvent.change(screen.getByPlaceholderText(/correo@empresa\.com/), { target: { value: 'juan@empresa.com' } })
+    fireEvent.click(screen.getByText(/Enviar Solicitud/i))
+
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith('/api/newsletter', {
+      expect(mockFetch).toHaveBeenCalledWith('/api/contact', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: 'test@example.com' }),
+        headers: { 'Content-Type': 'application/json' },
+        body: expect.any(String),
       })
     })
   })
 
-  it('handles newsletter form submission error', async () => {
-    const mockFetch = fetch as jest.MockedFunction<typeof fetch>
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      json: async () => ({ success: false, message: 'Error en la suscripción' }),
-    } as Response)
-
+  it('validates required fields and does not submit when invalid', async () => {
     render(<Hero />)
-    
-    const emailInput = screen.getByPlaceholderText(/tu@email.com/i)
-    const submitButton = screen.getByText(/Suscribirse/i)
-    
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
-    fireEvent.click(submitButton)
-    
+    fireEvent.click(screen.getByText(/Solicitar Cotización/i))
+    fireEvent.click(screen.getByText(/Enviar Solicitud/i))
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalled()
-    })
-  })
-
-  it('validates email format', async () => {
-    render(<Hero />)
-    
-    const emailInput = screen.getByPlaceholderText(/tu@email.com/i)
-    const submitButton = screen.getByText(/Suscribirse/i)
-    
-    // Email inválido
-    fireEvent.change(emailInput, { target: { value: 'invalid-email' } })
-    fireEvent.click(submitButton)
-    
-    // No debería hacer fetch con email inválido
-    expect(fetch).not.toHaveBeenCalled()
-  })
-
-  it('shows loading state during submission', async () => {
-    const mockFetch = fetch as jest.MockedFunction<typeof fetch>
-    mockFetch.mockImplementationOnce(() => new Promise(resolve => setTimeout(resolve, 100)))
-
-    render(<Hero />)
-    
-    const emailInput = screen.getByPlaceholderText(/tu@email.com/i)
-    const submitButton = screen.getByText(/Suscribirse/i)
-    
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
-    fireEvent.click(submitButton)
-    
-    // Debería mostrar estado de loading
-    expect(screen.getByText(/Suscribiendo/i)).toBeInTheDocument()
-  })
-
-  it('resets form after successful submission', async () => {
-    const mockFetch = fetch as jest.MockedFunction<typeof fetch>
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ success: true, message: 'Suscripción exitosa' }),
-    } as Response)
-
-    render(<Hero />)
-    
-    const emailInput = screen.getByPlaceholderText(/tu@email.com/i)
-    const submitButton = screen.getByText(/Suscribirse/i)
-    
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
-    fireEvent.click(submitButton)
-    
-    await waitFor(() => {
-      expect(emailInput).toHaveValue('')
+      expect(fetch).not.toHaveBeenCalled()
     })
   })
 })

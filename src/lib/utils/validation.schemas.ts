@@ -28,6 +28,15 @@ export const newsletterSchema = z.object({
   empresa: optionalStringSchema
 })
 
+export const contactSchema = z.object({
+  nombre: nameSchema,
+  empresa: optionalStringSchema,
+  email: emailSchema,
+  telefono: optionalStringSchema,
+  tipoServicio: z.enum(['Almacenaje', 'Transporte', 'Fulfillment', 'Otro']).optional().or(z.literal('')),
+  mensaje: optionalStringSchema
+})
+
 export const createUserSchema = z.object({
   email: emailSchema,
   nombre: nameSchema,
@@ -126,6 +135,7 @@ export const createOrderSchema = z.object({
 export type LoginFormData = z.infer<typeof loginSchema>
 export type RegisterFormData = z.infer<typeof registerSchema>
 export type NewsletterFormData = z.infer<typeof newsletterSchema>
+export type ContactFormData = z.infer<typeof contactSchema>
 export type CreateUserData = z.infer<typeof createUserSchema>
 export type UpdateUserData = z.infer<typeof updateUserSchema>
 export type CreateOrganizationData = z.infer<typeof createOrganizationSchema>

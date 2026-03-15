@@ -17,8 +17,8 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-gray-300 mb-6 max-w-md leading-relaxed">
-              Revolucionando la logística B2B en México. Conectamos empresas con proveedores 
-              especializados mediante tecnología inteligente para optimizar costos y eficiencia.
+              Intermediación logística 3PL en México. Tu socio estratégico en almacenaje, 
+              transporte y distribución con servicio personalizado y experiencia comprobada.
             </p>
             <div className="flex space-x-4">
               <a 
@@ -67,7 +67,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="#caracteristicas" className="text-gray-300 hover:text-white transition-colors duration-300">
-                  Características
+                  Servicios
                 </Link>
               </li>
               <li>
@@ -78,28 +78,38 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Servicios */}
+          {/* Servicios Lynkargo */}
           <div>
-            <h3 className="text-lg font-semibold mb-6">Servicios</h3>
+            <h3 className="text-lg font-semibold mb-6">Servicios Lynkargo</h3>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors duration-300">
-                  Transporte Terrestre
+                <a href="#caracteristicas" className="text-gray-300 hover:text-white transition-colors duration-300">
+                  Almacenaje y Gestión
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors duration-300">
-                  Almacenamiento
+                <a href="#caracteristicas" className="text-gray-300 hover:text-white transition-colors duration-300">
+                  Transporte Nacional
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors duration-300">
-                  Distribución
+                <a href="#caracteristicas" className="text-gray-300 hover:text-white transition-colors duration-300">
+                  Transporte Internacional
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors duration-300">
-                  Logística Inversa
+                <a href="#caracteristicas" className="text-gray-300 hover:text-white transition-colors duration-300">
+                  Fulfillment
+                </a>
+              </li>
+              <li>
+                <a href="#caracteristicas" className="text-gray-300 hover:text-white transition-colors duration-300">
+                  Maniobras Especializadas
+                </a>
+              </li>
+              <li>
+                <a href="#caracteristicas" className="text-gray-300 hover:text-white transition-colors duration-300">
+                  Consultoría Logística
                 </a>
               </li>
             </ul>

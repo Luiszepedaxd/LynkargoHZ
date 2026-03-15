@@ -274,6 +274,19 @@ model NewsletterSubscriber {
   @@map("newsletter_subscribers")
 }
 
+model ContactRequest {
+  id           String   @id @default(uuid())
+  nombre       String
+  empresa      String?
+  email        String
+  telefono     String?
+  tipoServicio String?  // Almacenaje | Transporte | Fulfillment | Otro
+  mensaje      String?
+  createdAt    DateTime @default(now())
+
+  @@map("contact_requests")
+}
+
 // ===== ENUMS =====
 
 enum OrganizationType {
