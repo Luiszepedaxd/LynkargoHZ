@@ -401,33 +401,33 @@ nav {
 
 @media (max-width: 640px) {
   .hero {
-    padding: 74px 3.5vw 34px;
+    padding: 74px 3.5vw 22px;
   }
   .hero-glass {
-    border-radius: 18px;
-    padding: 18px 12px;
+    border-radius: 16px;
+    padding: 14px 10px;
   }
   .hero-title {
     font-size: clamp(1.62rem, 9.2vw, 2rem);
-    min-height: 4.6em;
+    min-height: 3.9em;
     max-width: 100%;
+    margin-bottom: 10px;
   }
   .hero-badge {
     font-size: 0.64rem;
     padding: 5px 10px;
     gap: 6px;
+    margin-bottom: 10px;
   }
   .hero-sub {
-    font-size: 0.9rem;
-    line-height: 1.45;
-    margin-bottom: 14px;
+    display: none;
   }
   .hero-btns a {
     width: 100%;
     justify-content: center;
-    min-height: 46px;
-    font-size: 0.9rem;
-    padding: 12px 16px;
+    min-height: 42px;
+    font-size: 0.86rem;
+    padding: 10px 14px;
   }
   .wa-svg {
     width: 18px;
@@ -437,51 +437,43 @@ nav {
 
 @media (max-width: 480px) {
   .hero {
-    padding: 70px 3vw 28px;
+    padding: 68px 3vw 16px;
   }
   .hero-glass {
-    border-radius: 16px;
-    padding: 16px 10px;
+    border-radius: 14px;
+    padding: 12px 8px;
   }
   .hero-badge {
-    font-size: 0.6rem;
-    margin-bottom: 12px;
+    font-size: 0.56rem;
+    margin-bottom: 8px;
   }
   .badge-dot {
     width: 6px;
     height: 6px;
   }
   .hero-title {
-    font-size: clamp(1.46rem, 8.6vw, 1.78rem);
-    min-height: 4.95em;
-    margin-bottom: 12px;
-  }
-  .hero-sub {
-    font-size: 0.85rem;
-    line-height: 1.4;
-    margin-bottom: 12px;
+    font-size: clamp(1.34rem, 8.2vw, 1.62rem);
+    min-height: 3.75em;
+    margin-bottom: 8px;
   }
   .hero-btns {
-    gap: 8px;
+    gap: 6px;
   }
   .hero-btns a {
-    min-height: 42px;
-    font-size: 0.84rem;
-    padding: 10px 12px;
-    border-radius: 14px;
+    min-height: 40px;
+    font-size: 0.8rem;
+    padding: 9px 10px;
+    border-radius: 12px;
   }
 }
 
 @media (max-width: 360px) {
   .hero-title {
-    font-size: clamp(1.34rem, 8.2vw, 1.58rem);
-    min-height: 5.2em;
-  }
-  .hero-sub {
-    font-size: 0.81rem;
+    font-size: clamp(1.22rem, 8vw, 1.42rem);
+    min-height: 4.1em;
   }
   .hero-badge {
-    font-size: 0.56rem;
+    font-size: 0.52rem;
   }
 }
 
