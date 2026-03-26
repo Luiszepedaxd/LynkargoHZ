@@ -9,7 +9,7 @@ export default function LandingHeroSection() {
 
   useEffect(() => {
     const interval = window.setInterval(() => {
-      setActiveLine((prev) => (prev + 1) % hero.rotatingLines.length);
+      setActiveLine((prev) => (prev + 1) % hero.headlineVariants.length);
     }, 2500);
 
     return () => window.clearInterval(interval);
@@ -25,17 +25,8 @@ export default function LandingHeroSection() {
           </div>
 
           <h1 className="hero-title">
-            <span className="hero-title-fixed">{hero.headlineFixed}</span>
-            <span className="hero-rotator-wrap">
-              {hero.rotatingLines.map((line, idx) => (
-                <span
-                  key={line}
-                  className={`hero-rotator-line ${idx === activeLine ? "is-active" : ""}`}
-                  aria-hidden={idx !== activeLine}
-                >
-                  {line}
-                </span>
-              ))}
+            <span key={activeLine} className="hero-rotating-copy">
+              {hero.headlineVariants[activeLine]}
             </span>
           </h1>
 

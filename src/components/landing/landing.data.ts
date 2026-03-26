@@ -52,16 +52,15 @@ export const whatsappSectionHeroHref =
 
 export const hero = {
   badge: "Empresa familiar mexicana · +25 a\u00f1os de experiencia",
-  headlineFixed: "La log\u00edstica que tu empresa necesita,",
-  rotatingLines: [
-    "sin complicaciones.",
-    "con seguimiento 24/7.",
-    "desde Guadalajara a todo M\u00e9xico.",
-    "con 25 a\u00f1os de experiencia.",
-    "que reduce tus costos hasta 30%.",
-    "con un ejecutivo dedicado para ti.",
-    "terrestre, mar\u00edtima y a\u00e9rea.",
-    "con red de proveedores certificados.",
+  headlineVariants: [
+    "La log\u00edstica que tu empresa necesita, sin complicaciones.",
+    "La log\u00edstica que tu empresa necesita, con seguimiento 24/7.",
+    "La log\u00edstica que tu empresa necesita, desde Guadalajara a todo M\u00e9xico.",
+    "La log\u00edstica que tu empresa necesita, con 25 a\u00f1os de experiencia.",
+    "La log\u00edstica que tu empresa necesita, y reduce costos hasta 30%.",
+    "La log\u00edstica que tu empresa necesita, con un ejecutivo dedicado para ti.",
+    "La log\u00edstica que tu empresa necesita, terrestre, mar\u00edtima y a\u00e9rea.",
+    "La log\u00edstica que tu empresa necesita, con red de proveedores certificados.",
   ],
   subtitle:
     "Somos tu aliado 3PL en la Zona Metropolitana de Guadalajara. Conectamos tu empresa con los mejores proveedores log\u00edsticos certificados para que t\u00fa te enfoques en crecer.",

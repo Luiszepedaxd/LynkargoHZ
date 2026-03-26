@@ -118,7 +118,7 @@ nav {
 /* HERO */
 .hero {
   min-height: 100vh;
-  background: linear-gradient(110deg, #0f2044 0%, #152d5d 100%);
+  background: #0f2044;
   position: relative;
   overflow: hidden;
   display: flex;
@@ -130,9 +130,15 @@ nav {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.08) 1px, transparent 0);
-  background-size: 28px 28px;
-  opacity: 0.08;
+  background-image: linear-gradient(
+      100deg,
+      rgba(7, 18, 43, 0.9) 0%,
+      rgba(10, 27, 58, 0.78) 48%,
+      rgba(10, 27, 58, 0.64) 100%
+    ),
+    url("https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1920&q=80");
+  background-size: cover;
+  background-position: center;
   pointer-events: none;
 }
 
@@ -140,7 +146,10 @@ nav {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 60% 45% at 70% 45%, rgba(249, 115, 22, 0.18), transparent 70%);
+  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.08) 1px, transparent 0),
+    radial-gradient(ellipse 60% 45% at 70% 45%, rgba(249, 115, 22, 0.16), transparent 70%);
+  background-size: 28px 28px, auto;
+  opacity: 0.35;
   pointer-events: none;
 }
 
@@ -196,37 +205,33 @@ nav {
 .hero-title {
   font-size: clamp(2.2rem, 5vw, 3.8rem);
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.06;
   color: #fff;
   letter-spacing: -0.03em;
   margin-bottom: 22px;
   animation: fadeUp 0.7s 0.1s ease both;
+  max-width: 740px;
+  min-height: 3.3em;
 }
 
-.hero-title-fixed {
-  display: block;
+.hero-rotating-copy {
+  display: inline-block;
+  animation: heroCopyIn 0.45s ease both;
 }
 
-.hero-rotator-wrap {
-  display: block;
-  position: relative;
-  min-height: 1.3em;
-  margin-top: 6px;
+.hero-rotating-copy::after {
+  content: none;
 }
 
-.hero-rotator-line {
-  position: absolute;
-  left: 0;
-  top: 0;
-  color: var(--orange);
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.45s ease, transform 0.45s ease;
-}
-
-.hero-rotator-line.is-active {
-  opacity: 1;
-  transform: translateY(0);
+@keyframes heroCopyIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hero-sub {
@@ -303,11 +308,11 @@ nav {
   width: min(100%, 420px);
   border-radius: 20px;
   padding: 22px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 16px 36px rgba(6, 16, 37, 0.28);
   animation: trackingFloat 4.5s ease-in-out infinite;
 }
 
@@ -420,6 +425,7 @@ nav {
   }
   .hero-title {
     font-size: clamp(2rem, 9vw, 2.6rem);
+    min-height: 3.8em;
   }
   .hero-sub {
     font-size: 1rem;
