@@ -1,15 +1,6 @@
 import WhatsAppIcon from "@/components/landing/icons/WhatsAppIcon";
 import { hero } from "@/components/landing/landing.data";
 
-function renderMultiline(text: string) {
-  return text.split("\n").map((line, idx) => (
-    <span key={idx}>
-      {line}
-      {idx < text.split("\n").length - 1 ? <br /> : null}
-    </span>
-  ));
-}
-
 export default function LandingHeroSection() {
   return (
     <section className="hero">
@@ -58,18 +49,6 @@ export default function LandingHeroSection() {
               </svg>
               {hero.cta.secondaryLabel}
             </a>
-          </div>
-
-          <div className="hero-stats" aria-label="Indicadores">
-            {hero.stats.map((s, idx) => (
-              <div key={idx} style={{ display: "flex", flexDirection: "column" }}>
-                <div className="stat-num">
-                  {s.num}
-                  <em>{s.suffix}</em>
-                </div>
-                <div className="stat-label">{renderMultiline(s.label)}</div>
-              </div>
-            ))}
           </div>
         </div>
 
