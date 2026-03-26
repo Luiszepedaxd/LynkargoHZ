@@ -65,11 +65,11 @@ export const hero = {
     },
     {
       lead: "Con Lynkargo obtienes una operaci\u00f3n",
-      highlight: "con seguimiento 24/7.",
+      highlight: "con seguimiento continuo.",
     },
     {
       lead: "Conectamos tu operaci\u00f3n",
-      highlight: "desde Guadalajara a todo M\u00e9xico.",
+      highlight: "desde Guadalajara con alcance nacional.",
     },
     {
       lead: "Tu cadena de suministro respaldada por",
@@ -77,7 +77,7 @@ export const hero = {
     },
     {
       lead: "Dise\u00f1amos tu estrategia para lograr",
-      highlight: "hasta 30% menos costos log\u00edsticos.",
+      highlight: "una operaci\u00f3n log\u00edstica m\u00e1s eficiente.",
     },
     {
       lead: "Tienes acompa\u00f1amiento directo con",
@@ -93,7 +93,7 @@ export const hero = {
     },
   ],
   subtitle:
-    "Somos tu aliado 3PL en la Zona Metropolitana de Guadalajara. Conectamos tu empresa con los mejores proveedores log\u00edsticos certificados para que t\u00fa te enfoques en crecer.",
+    "Somos tu aliado 3PL en la Zona Metropolitana de Guadalajara. Conectamos tu empresa con proveedores log\u00edsticos certificados para que t\u00fa te enfoques en crecer.",
   cta: {
     whatsappHref: whatsappHeroHref,
     whatsappLabel: "Habla con un asesor",
@@ -154,7 +154,7 @@ export const value = {
     "Combinamos d\u00e9cadas de experiencia familiar con metodolog\u00edas modernas. El servicio personalizado de una empresa familiar con la red de una gran operaci\u00f3n log\u00edstica.",
   list: [
     {
-      bold: "Red certificada al 100%",
+      bold: "Red de proveedores certificados",
       text: " — Proveedores verificados con seguros, capacidad y est\u00e1ndares probados en la ZMG de Jalisco.",
     },
     {
@@ -162,8 +162,8 @@ export const value = {
       text: " — Un punto de contacto \u00fanico para toda tu operaci\u00f3n log\u00edstica.",
     },
     {
-      bold: "Transparencia total",
-      text: " — Reportes detallados, seguimiento en tiempo real y trazabilidad completa.",
+      bold: "Transparencia operativa",
+      text: " — Reportes detallados, seguimiento continuo y trazabilidad clara.",
     },
     {
       bold: "Empresa familiar mexicana",
@@ -171,10 +171,10 @@ export const value = {
     },
   ] as ValueListItem[],
   metrics: [
-    { value: "30%", label: "Reducci\u00f3n promedio en costos log\u00edsticos" },
-    { value: "15+", label: "Estados con cobertura nacional" },
-    { value: "100%", label: "Proveedores certificados en la red" },
-    { value: "24/7", label: "Seguimiento en tiempo real" },
+    { value: "Eficiencia", label: "Optimizaci\u00f3n de costos log\u00edsticos" },
+    { value: "Cobertura", label: "Presencia operativa nacional" },
+    { value: "Calidad", label: "Proveedores certificados en la red" },
+    { value: "Control", label: "Seguimiento y trazabilidad operativa" },
   ] as ValueMetric[],
 };
 
@@ -210,19 +210,19 @@ export const targets: TargetCard[] = [
     emoji: "🏭",
     title: "PyMEs Manufactureras",
     description:
-      "50\u2013500 empleados con producci\u00f3n nacional que necesitan outsourcing log\u00edstico profesional para escalar.",
+      "Empresas manufactureras con producci\u00f3n nacional que necesitan outsourcing log\u00edstico profesional para escalar.",
   },
   {
     emoji: "🛒",
     title: "E-commerce en Crecimiento",
     description:
-      "+100 \u00f3rdenes mensuales que buscan fulfillment profesional y quieren crecer sin bodega propia.",
+      "Negocios en crecimiento que buscan fulfillment profesional y quieren crecer sin bodega propia.",
   },
   {
     emoji: "🗺️",
     title: "Distribuidores Regionales",
     description:
-      "Operan en 5\u201315 estados y necesitan almacenes estrat\u00e9gicos para optimizar costos de distribuci\u00f3n.",
+      "Operan en m\u00faltiples regiones y necesitan almacenes estrat\u00e9gicos para optimizar costos de distribuci\u00f3n.",
   },
   {
     emoji: "✈️",
@@ -236,7 +236,7 @@ export const cta = {
   tag: "Empecemos",
   titleLines: ["\u00bfListo para optimizar", "tu log\u00edstica?"],
   subtitle:
-    "Escr\u00edbenos por WhatsApp y en menos de 24 horas tendr\u00e1s una propuesta personalizada para tu operaci\u00f3n. Sin compromisos.",
+    "Escr\u00edbenos por WhatsApp y te compartiremos una propuesta personalizada para tu operaci\u00f3n. Sin compromisos.",
   whatsappHref:
     "https://wa.me/523321847482?text=Hola%2C%20quiero%20una%20cotizaci%C3%B3n%20personalizada%20para%20mi%20empresa%20con%20Lynkargo.",
   whatsappLabel: "Escribir por WhatsApp",
