@@ -27,10 +27,12 @@ export default function LandingHeroSection() {
       ></div>
       <div className="hero-grid">
         <div className="hero-glass">
-          <div className="hero-badge">
-            <span className="badge-dot"></span>
-            {hero.badge}
-          </div>
+          {hero.badge ? (
+            <div className="hero-badge">
+              <span className="badge-dot"></span>
+              {hero.badge}
+            </div>
+          ) : null}
 
           <h1 className="hero-title">
             <span key={activeLine} className="hero-rotating-copy">

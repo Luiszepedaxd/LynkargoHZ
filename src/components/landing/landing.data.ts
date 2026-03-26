@@ -51,7 +51,7 @@ export const whatsappSectionHeroHref =
   "https://wa.me/523321847482?text=Hola%2C%20me%20interesa%20una%20cotizaci%C3%B3n%20para%20servicios%20log%C3%ADsticos%20con%20Lynkargo.";
 
 export const hero = {
-  badge: "Empresa familiar mexicana · +25 a\u00f1os de experiencia",
+  badge: "",
   backgroundImages: [
     "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1920&q=80",
     "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=1920&q=80",
