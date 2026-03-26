@@ -59,7 +59,7 @@ export const hero = {
     [{ text: "expertas.", className: "accent-orange" }],
   ] as Array<Array<{ text: string; className?: string }>>,
   subtitlePrefix:
-    "Intermediaci\u00f3n log\u00edstica 3PL integral. Conectamos tu empresa con proveedores certificados en todo M\u00e9xico, reduciendo costos hasta ",
+    "Intermediaci\u00f3n log\u00edstica 3PL integral. Conectamos tu empresa con proveedores certificados en la ZMG de Jalisco, reduciendo costos hasta ",
   subtitleHighlight: "30%",
   subtitleSuffix:
     " y liberando a tu equipo para crecer.",
@@ -152,7 +152,7 @@ export const value = {
   list: [
     {
       bold: "Red certificada al 100%",
-      text: " — Proveedores verificados con seguros, capacidad y est\u00e1ndares probados en todo M\u00e9xico.",
+      text: " — Proveedores verificados con seguros, capacidad y est\u00e1ndares probados en la ZMG de Jalisco.",
     },
     {
       bold: "Ejecutivo dedicado",
