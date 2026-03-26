@@ -1,7 +1,18 @@
 import WhatsAppIcon from "@/components/landing/icons/WhatsAppIcon";
 import { hero } from "@/components/landing/landing.data";
+import { useEffect, useState } from "react";
 
 export default function LandingHeroSection() {
+  const [activeLine, setActiveLine] = useState(0);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setActiveLine((prev) => (prev + 1) % hero.rotatingLines.length);
+    }, 2500);
+
+    return () => window.clearInterval(interval);
+  }, []);
+
   return (
     <section className="hero">
       <div className="hero-grid">
@@ -11,17 +22,22 @@ export default function LandingHeroSection() {
             {hero.badge}
           </div>
 
-          <h1>
-            Tu <span className="accent-blue">cadena de<br />suministro,</span>
-            <br />
-            en manos <span className="accent-orange">expertas.</span>
+          <h1 className="hero-title">
+            <span className="hero-title-fixed">{hero.headlineFixed}</span>
+            <span className="hero-rotator-wrap">
+              {hero.rotatingLines.map((line, idx) => (
+                <span
+                  key={line}
+                  className={`hero-rotator-line ${idx === activeLine ? "is-active" : ""}`}
+                  aria-hidden={idx !== activeLine}
+                >
+                  {line}
+                </span>
+              ))}
+            </span>
           </h1>
 
-          <p className="hero-sub">
-            {hero.subtitlePrefix}
-            <strong style={{ color: "#fff" }}>{hero.subtitleHighlight}</strong>
-            {hero.subtitleSuffix}
-          </p>
+          <p className="hero-sub">{hero.subtitle}</p>
 
           <div className="hero-btns">
             <a
@@ -53,16 +69,21 @@ export default function LandingHeroSection() {
         </div>
 
         <div className="hero-visual">
-          {hero.visualCards.map((card, idx) => (
-            <div key={idx} className="vis-card">
-              <div className={`vis-ico ${card.variant}`}>{card.icon}</div>
-              <div>
-                <div className="vis-title">{card.title}</div>
-                <div className="vis-desc">{card.description}</div>
-              </div>
-              <div className="vis-badge">{card.badge}</div>
+          <article className="tracking-card" aria-label={hero.trackingPanel.title}>
+            <h3 className="tracking-title">{hero.trackingPanel.title}</h3>
+            <div className="tracking-list">
+              {hero.trackingPanel.items.map((item) => (
+                <div className="tracking-row" key={item.label}>
+                  <span className={`tracking-dot ${item.dot}`} aria-hidden="true"></span>
+                  <span className="tracking-label">{item.label}</span>
+                  <span className="tracking-status">{item.status}</span>
+                </div>
+              ))}
             </div>
-          ))}
+            <div className="tracking-progress">
+              <span className="tracking-progress-bar"></span>
+            </div>
+          </article>
         </div>
       </div>
     </section>

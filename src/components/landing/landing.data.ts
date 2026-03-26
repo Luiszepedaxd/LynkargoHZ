@@ -51,51 +51,33 @@ export const whatsappSectionHeroHref =
   "https://wa.me/523321847482?text=Hola%2C%20me%20interesa%20una%20cotizaci%C3%B3n%20para%20servicios%20log%C3%ADsticos%20con%20Lynkargo.";
 
 export const hero = {
-  badge: "25+ a\u00f1os de experiencia log\u00edstica",
-  titleLines: [
-    [{ text: "Tu " }],
-    [{ text: "cadena de\n", className: "accent-blue" }, { text: "suministro,", className: "accent-blue" }],
-    [{ text: "en manos " }],
-    [{ text: "expertas.", className: "accent-orange" }],
-  ] as Array<Array<{ text: string; className?: string }>>,
-  subtitlePrefix:
-    "Intermediaci\u00f3n log\u00edstica 3PL integral. Conectamos tu empresa con proveedores certificados en la ZMG de Jalisco, reduciendo costos hasta ",
-  subtitleHighlight: "30%",
-  subtitleSuffix:
-    " y liberando a tu equipo para crecer.",
-  stats: [
-    { num: "30", suffix: "%", label: "Reducci\u00f3n\nde costos" },
-    { num: "15", suffix: "+", label: "Estados\ncubiertos" },
-    { num: "99", suffix: "%", label: "Satisfacci\u00f3n\ndel cliente" },
+  badge: "Empresa familiar mexicana · +25 a\u00f1os de experiencia",
+  headlineFixed: "La log\u00edstica que tu empresa necesita,",
+  rotatingLines: [
+    "sin complicaciones.",
+    "con seguimiento 24/7.",
+    "desde Guadalajara a todo M\u00e9xico.",
+    "con 25 a\u00f1os de experiencia.",
+    "que reduce tus costos hasta 30%.",
+    "con un ejecutivo dedicado para ti.",
+    "terrestre, mar\u00edtima y a\u00e9rea.",
+    "con red de proveedores certificados.",
   ],
-  visualCards: [
-    {
-      variant: "b" as const,
-      icon: "📦",
-      title: "Almacenaje en Red",
-      description: "15+ estados. WMS integrado, inventario en tiempo real.",
-      badge: "Activo",
-    },
-    {
-      variant: "o" as const,
-      icon: "🚛",
-      title: "Transporte Nacional e Internacional",
-      description: "Fletes multimodales con seguimiento 24/7.",
-      badge: "En tr\u00e1nsito",
-    },
-    {
-      variant: "g" as const,
-      icon: "🔄",
-      title: "Fulfillment E-commerce",
-      description: "Picking, packing y env\u00edo directo al cliente final.",
-      badge: "Integrado",
-    },
-  ],
+  subtitle:
+    "Somos tu aliado 3PL en la Zona Metropolitana de Guadalajara. Conectamos tu empresa con los mejores proveedores log\u00edsticos certificados para que t\u00fa te enfoques en crecer.",
+  trackingPanel: {
+    title: "Tu carga en tiempo real",
+    items: [
+      { dot: "green", label: "Almac\u00e9n GDL", status: "En proceso" },
+      { dot: "yellow", label: "Ruta CDMX", status: "En tr\u00e1nsito" },
+      { dot: "blue", label: "Destino MTY", status: "Programado" },
+    ],
+  },
   cta: {
     whatsappHref: whatsappHeroHref,
-    whatsappLabel: "Cotiza por WhatsApp",
+    whatsappLabel: "Habla con un asesor",
     secondaryHref: "#servicios",
-    secondaryLabel: "Ver Servicios",
+    secondaryLabel: "Conoce nuestros servicios",
   },
 };
 
