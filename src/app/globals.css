@@ -192,6 +192,8 @@ nav {
   text-transform: uppercase;
   margin-bottom: 24px;
   animation: fadeUp 0.6s ease both;
+  max-width: 100%;
+  white-space: normal;
 }
 
 .badge-dot {
@@ -224,6 +226,7 @@ nav {
   animation: fadeUp 0.7s 0.1s ease both;
   max-width: 710px;
   min-height: 3.3em;
+  text-wrap: balance;
 }
 
 .hero-rotating-copy {
@@ -271,6 +274,7 @@ nav {
   max-width: 680px;
   margin: 0 auto 38px;
   animation: fadeUp 0.7s 0.2s ease both;
+  text-wrap: pretty;
 }
 
 .hero-btns {
@@ -373,6 +377,8 @@ nav {
   .hero-badge {
     margin-bottom: 16px;
     font-size: 0.68rem;
+    justify-content: center;
+    line-height: 1.25;
   }
   .hero-title {
     font-size: clamp(1.75rem, 8.2vw, 2.3rem);
@@ -403,7 +409,13 @@ nav {
   }
   .hero-title {
     font-size: clamp(1.62rem, 9.2vw, 2rem);
-    min-height: 4.35em;
+    min-height: 4.6em;
+    max-width: 100%;
+  }
+  .hero-badge {
+    font-size: 0.64rem;
+    padding: 5px 10px;
+    gap: 6px;
   }
   .hero-sub {
     font-size: 0.9rem;
@@ -420,6 +432,56 @@ nav {
   .wa-svg {
     width: 18px;
     height: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: 70px 3vw 28px;
+  }
+  .hero-glass {
+    border-radius: 16px;
+    padding: 16px 10px;
+  }
+  .hero-badge {
+    font-size: 0.6rem;
+    margin-bottom: 12px;
+  }
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+  }
+  .hero-title {
+    font-size: clamp(1.46rem, 8.6vw, 1.78rem);
+    min-height: 4.95em;
+    margin-bottom: 12px;
+  }
+  .hero-sub {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-bottom: 12px;
+  }
+  .hero-btns {
+    gap: 8px;
+  }
+  .hero-btns a {
+    min-height: 42px;
+    font-size: 0.84rem;
+    padding: 10px 12px;
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 360px) {
+  .hero-title {
+    font-size: clamp(1.34rem, 8.2vw, 1.58rem);
+    min-height: 5.2em;
+  }
+  .hero-sub {
+    font-size: 0.81rem;
+  }
+  .hero-badge {
+    font-size: 0.56rem;
   }
 }
 
