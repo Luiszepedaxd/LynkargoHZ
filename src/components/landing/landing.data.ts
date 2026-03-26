@@ -198,7 +198,7 @@ export const processSteps: ProcessStep[] = [
     number: "4",
     title: "Seguimiento",
     description:
-      "Monitoreo continuo, reportes peri\u00f3dicos y optimizaci\u00f3n constante para maximizar resultados.",
+      "Monitoreo continuo, reportes de la operaci\u00f3n, BMR del proyecto (Business Monthly Review), optimizaci\u00f3n constante para maximizaci\u00f3n de los resultados.",
   },
 ];
 
