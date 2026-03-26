@@ -1,3 +1,5 @@
+"use client";
+
 import WhatsAppIcon from "@/components/landing/icons/WhatsAppIcon";
 import { hero } from "@/components/landing/landing.data";
 import { useEffect, useState } from "react";
