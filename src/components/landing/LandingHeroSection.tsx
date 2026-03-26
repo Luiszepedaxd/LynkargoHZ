@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 
 export default function LandingHeroSection() {
   const [activeLine, setActiveLine] = useState(0);
+  const activeSlide = hero.headlineVariants[activeLine];
+  const activeBg = hero.backgroundImages[activeLine % hero.backgroundImages.length];
 
   useEffect(() => {
     const interval = window.setInterval(() => {
@@ -17,8 +19,9 @@ export default function LandingHeroSection() {
 
   return (
     <section className="hero">
+      <div className="hero-bg" style={{ backgroundImage: `url("${activeBg}")` }} aria-hidden="true"></div>
       <div className="hero-grid">
-        <div>
+        <div className="hero-glass">
           <div className="hero-badge">
             <span className="badge-dot"></span>
             {hero.badge}
@@ -26,7 +29,8 @@ export default function LandingHeroSection() {
 
           <h1 className="hero-title">
             <span key={activeLine} className="hero-rotating-copy">
-              {hero.headlineVariants[activeLine]}
+              <span className="hero-copy-lead">{activeSlide.lead} </span>
+              <span className="hero-copy-highlight">{activeSlide.highlight}</span>
             </span>
           </h1>
 
@@ -59,24 +63,6 @@ export default function LandingHeroSection() {
               {hero.cta.secondaryLabel}
             </a>
           </div>
-        </div>
-
-        <div className="hero-visual">
-          <article className="tracking-card" aria-label={hero.trackingPanel.title}>
-            <h3 className="tracking-title">{hero.trackingPanel.title}</h3>
-            <div className="tracking-list">
-              {hero.trackingPanel.items.map((item) => (
-                <div className="tracking-row" key={item.label}>
-                  <span className={`tracking-dot ${item.dot}`} aria-hidden="true"></span>
-                  <span className="tracking-label">{item.label}</span>
-                  <span className="tracking-status">{item.status}</span>
-                </div>
-              ))}
-            </div>
-            <div className="tracking-progress">
-              <span className="tracking-progress-bar"></span>
-            </div>
-          </article>
         </div>
       </div>
     </section>

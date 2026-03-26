@@ -52,26 +52,48 @@ export const whatsappSectionHeroHref =
 
 export const hero = {
   badge: "Empresa familiar mexicana · +25 a\u00f1os de experiencia",
+  backgroundImages: [
+    "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1920&q=80",
+    "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=1920&q=80",
+    "https://images.unsplash.com/photo-1616432043562-3671ea2e5242?auto=format&fit=crop&w=1920&q=80",
+    "https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=1920&q=80",
+  ],
   headlineVariants: [
-    "La log\u00edstica que tu empresa necesita, sin complicaciones.",
-    "La log\u00edstica que tu empresa necesita, con seguimiento 24/7.",
-    "La log\u00edstica que tu empresa necesita, desde Guadalajara a todo M\u00e9xico.",
-    "La log\u00edstica que tu empresa necesita, con 25 a\u00f1os de experiencia.",
-    "La log\u00edstica que tu empresa necesita, y reduce costos hasta 30%.",
-    "La log\u00edstica que tu empresa necesita, con un ejecutivo dedicado para ti.",
-    "La log\u00edstica que tu empresa necesita, terrestre, mar\u00edtima y a\u00e9rea.",
-    "La log\u00edstica que tu empresa necesita, con red de proveedores certificados.",
+    {
+      lead: "La log\u00edstica que tu empresa necesita,",
+      highlight: "sin complicaciones.",
+    },
+    {
+      lead: "Con Lynkargo obtienes una operaci\u00f3n",
+      highlight: "con seguimiento 24/7.",
+    },
+    {
+      lead: "Conectamos tu operaci\u00f3n",
+      highlight: "desde Guadalajara a todo M\u00e9xico.",
+    },
+    {
+      lead: "Tu cadena de suministro respaldada por",
+      highlight: "25 a\u00f1os de experiencia.",
+    },
+    {
+      lead: "Dise\u00f1amos tu estrategia para lograr",
+      highlight: "hasta 30% menos costos log\u00edsticos.",
+    },
+    {
+      lead: "Tienes acompa\u00f1amiento directo con",
+      highlight: "un ejecutivo dedicado.",
+    },
+    {
+      lead: "Integramos operaciones",
+      highlight: "terrestres, mar\u00edtimas y a\u00e9reas.",
+    },
+    {
+      lead: "Tu empresa avanza con",
+      highlight: "red de proveedores certificados.",
+    },
   ],
   subtitle:
     "Somos tu aliado 3PL en la Zona Metropolitana de Guadalajara. Conectamos tu empresa con los mejores proveedores log\u00edsticos certificados para que t\u00fa te enfoques en crecer.",
-  trackingPanel: {
-    title: "Tu carga en tiempo real",
-    items: [
-      { dot: "green", label: "Almac\u00e9n GDL", status: "En proceso" },
-      { dot: "yellow", label: "Ruta CDMX", status: "En tr\u00e1nsito" },
-      { dot: "blue", label: "Destino MTY", status: "Programado" },
-    ],
-  },
   cta: {
     whatsappHref: whatsappHeroHref,
     whatsappLabel: "Habla con un asesor",
