@@ -126,7 +126,7 @@ export const services: ServiceCard[] = [
     title: "Operaciones 3PL Completas",
     description:
       "Carga y descarga, maniobras especializadas, etiquetado, re-empaque, armado de pedidos y cross-docking.",
-    tags: ["Maniobras", "Cross-docking", "Re-empaque"],
+    tags: ["Maniobras", "Cross-docking", "Maquila Ligera"],
   },
   {
     icon: "🔍",
