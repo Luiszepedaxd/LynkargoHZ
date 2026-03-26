@@ -79,7 +79,7 @@ export const hero = {
     {
       variant: "o" as const,
       icon: "🚛",
-      title: "Transporte Nacional",
+      title: "Transporte Nacional e Internacional",
       description: "Fletes multimodales con seguimiento 24/7.",
       badge: "En tr\u00e1nsito",
     },
