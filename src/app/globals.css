@@ -328,30 +328,98 @@ nav {
 }
 
 @media (max-width: 900px) {
+  .hero {
+    min-height: auto;
+    padding: 82px 4vw 50px;
+  }
+  .hero-bg {
+    transform: scale(1.01);
+  }
   .hero-glass {
     width: min(100%, 720px);
+    border-radius: 26px;
+    padding: 28px 20px;
+  }
+  .hero-badge {
+    font-size: 0.72rem;
+    padding: 6px 12px;
+    letter-spacing: 0.03em;
+  }
+  .hero-title {
+    font-size: clamp(1.9rem, 6.8vw, 2.9rem);
+    min-height: 3.7em;
+    margin-bottom: 16px;
+  }
+  .hero-sub {
+    font-size: 1rem;
+    line-height: 1.55;
+    margin-bottom: 22px;
+  }
+  .hero-btns a {
+    min-height: 50px;
+    padding: 14px 22px;
+    font-size: 0.96rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 76px 4vw 42px;
+  }
+  .hero-glass {
+    border-radius: 22px;
+    padding: 22px 14px;
+  }
+  .hero-badge {
+    margin-bottom: 16px;
+    font-size: 0.68rem;
+  }
+  .hero-title {
+    font-size: clamp(1.75rem, 8.2vw, 2.3rem);
+    min-height: 4.1em;
+    line-height: 1.08;
+  }
+  .hero-sub {
+    font-size: 0.96rem;
+    margin-bottom: 18px;
+  }
+  .hero-btns {
+    gap: 10px;
+  }
+  .hero-btns a {
+    width: 100%;
+    justify-content: center;
+    min-height: 48px;
   }
 }
 
 @media (max-width: 640px) {
   .hero {
-    padding: 80px 4vw 56px;
+    padding: 74px 3.5vw 34px;
   }
   .hero-glass {
-    border-radius: 24px;
-    padding: 24px 16px;
+    border-radius: 18px;
+    padding: 18px 12px;
   }
   .hero-title {
-    font-size: clamp(2rem, 9vw, 2.6rem);
-    min-height: 4.2em;
+    font-size: clamp(1.62rem, 9.2vw, 2rem);
+    min-height: 4.35em;
   }
   .hero-sub {
-    font-size: 1rem;
-    margin-bottom: 26px;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    margin-bottom: 14px;
   }
   .hero-btns a {
     width: 100%;
     justify-content: center;
+    min-height: 46px;
+    font-size: 0.9rem;
+    padding: 12px 16px;
+  }
+  .wa-svg {
+    width: 18px;
+    height: 18px;
   }
 }
 
