@@ -12,14 +12,19 @@ export default function LandingHeroSection() {
   useEffect(() => {
     const interval = window.setInterval(() => {
       setActiveLine((prev) => (prev + 1) % hero.headlineVariants.length);
-    }, 2500);
+    }, 3200);
 
     return () => window.clearInterval(interval);
   }, []);
 
   return (
     <section className="hero">
-      <div className="hero-bg" style={{ backgroundImage: `url("${activeBg}")` }} aria-hidden="true"></div>
+      <div
+        key={activeBg}
+        className="hero-bg"
+        style={{ backgroundImage: `url("${activeBg}")` }}
+        aria-hidden="true"
+      ></div>
       <div className="hero-grid">
         <div className="hero-glass">
           <div className="hero-badge">
