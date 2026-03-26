@@ -38,8 +38,8 @@ export type FooterLink = {
 };
 
 export const navItems: NavItem[] = [
-  { href: "#servicios", label: "Servicios" },
   { href: "#nosotros", label: "Nosotros" },
+  { href: "#servicios", label: "Servicios" },
   { href: "#proceso", label: "Proceso" },
   { href: "#clientes", label: "Clientes" },
 ];
