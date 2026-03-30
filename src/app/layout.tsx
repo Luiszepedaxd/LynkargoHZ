@@ -11,7 +11,7 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "Lynkargo — Tu Socio Estratégico en Logística 3PL",
   description:
-    "Intermediación logística 3PL integral. Conectamos tu empresa con proveedores certificados en la ZMG de Jalisco, reduciendo costos y liberando a tu equipo para crecer.",
+    "Intermediación logística 3PL integral. Conectamos tu empresa con proveedores certificados en la ZMG, reduciendo costos y liberando a tu equipo para crecer.",
   keywords:
     "lynkargo, logística 3PL, almacenaje México, transporte de carga, fulfillment, distribución, intermediación logística",
   robots: "index, follow",

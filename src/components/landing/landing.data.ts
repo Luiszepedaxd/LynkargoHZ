@@ -107,7 +107,7 @@ export const services: ServiceCard[] = [
     icon: "🏭",
     title: "Almacenaje & Gesti\u00f3n de Inventarios",
     description:
-      "Almacenamiento temporal y de largo plazo en instalaciones certificadas. WMS integrado y reportes peri\u00f3dicos.",
+      "Almacenamiento temporal, y de largo plazo para mercanc\u00edas nacionales, nacionalizadas o ya sea bajo la figura de dep\u00f3sito fiscal o programa IMMEX en instalaciones certificadas. WMS integrado para la adecuada administraci\u00f3n de los inventarios y reportes peri\u00f3dicos.",
     tags: ["Corto plazo", "Largo plazo", "WMS"],
   },
   {
@@ -133,16 +133,17 @@ export const services: ServiceCard[] = [
   },
   {
     icon: "🔍",
-    title: "Control de Calidad & Destrucci\u00f3n",
+    title:
+      "Control de Calidad & Destrucci\u00f3n de mercanc\u00edas, conforme a normativas fiscales y sanitarias",
     description:
-      "Verificaci\u00f3n y auditor\u00eda de productos, control de calidad riguroso y destrucci\u00f3n certificada conforme a normativas.",
+      "Verificaci\u00f3n y auditor\u00eda de productos, control de calidad riguroso y destrucci\u00f3n de mercanc\u00edas, conforme a normativas fiscales y sanitarias.",
     tags: ["Auditor\u00eda", "Certificado", "Normativo"],
   },
   {
     icon: "📊",
     title: "Consultor\u00eda Log\u00edstica",
     description:
-      "Optim\u00edzaci\u00f3n de cadena de suministro, asesor\u00eda ISO, cumplimiento aduanal y estrategias de reducci\u00f3n de costos.",
+      "Optim\u00edzaci\u00f3n de cadena de suministro, asesor\u00eda ISO, BASC y C-TPAT, cumplimiento aduanal y estrategias de reducci\u00f3n de costos.",
     tags: ["ISO", "Aduanas", "Optimizaci\u00f3n"],
   },
 ];
@@ -155,7 +156,7 @@ export const value = {
   list: [
     {
       bold: "Red de proveedores certificados",
-      text: " — Proveedores verificados con seguros, capacidad y est\u00e1ndares probados en la ZMG de Jalisco.",
+      text: " — Proveedores verificados con seguros, capacidad y est\u00e1ndares probados en la ZMG.",
     },
     {
       bold: "Ejecutivo dedicado",
@@ -216,7 +217,7 @@ export const targets: TargetCard[] = [
     emoji: "🛒",
     title: "E-commerce en Crecimiento",
     description:
-      "Negocios en crecimiento que buscan fulfillment profesional y quieren crecer sin bodega propia.",
+      "Negocios en crecimiento que buscan fulfillment profesional y quieren crecer sin almacén e infraestructuras propias.",
   },
   {
     emoji: "🗺️",
