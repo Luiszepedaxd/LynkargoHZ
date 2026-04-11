@@ -69,7 +69,7 @@ export const hero = {
     },
     {
       lead: "Conectamos tu operaci\u00f3n",
-      highlight: "desde Guadalajara con alcance nacional.",
+      highlight: "desde Guadalajara con alcance en ZMG y Monterrey.",
     },
     {
       lead: "Tu cadena de suministro respaldada por",
@@ -107,7 +107,7 @@ export const services: ServiceCard[] = [
     icon: "🏭",
     title: "Almacenaje & Gesti\u00f3n de Inventarios",
     description:
-      "Almacenamiento temporal, y de largo plazo para mercanc\u00edas nacionales, nacionalizadas o ya sea bajo la figura de dep\u00f3sito fiscal o programa IMMEX en instalaciones certificadas. WMS integrado para la adecuada administraci\u00f3n de los inventarios y reportes peri\u00f3dicos.",
+      "Almacenamiento temporal, y de largo plazo para mercanc\u00edas nacionales, nacionalizadas o ya sea bajo la figura de dep\u00f3sito fiscal o programa IMMEX en instalaciones certificadas en ZMG y Monterrey. WMS integrado para la adecuada administraci\u00f3n de los inventarios y reportes peri\u00f3dicos.",
     tags: ["Corto plazo", "Largo plazo", "WMS"],
   },
   {
@@ -121,7 +121,7 @@ export const services: ServiceCard[] = [
     icon: "📬",
     title: "Fulfillment E-commerce",
     description:
-      "Recepci\u00f3n, almacenaje din\u00e1mico, procesamiento de \u00f3rdenes y env\u00edo directo al cliente. Integraci\u00f3n con plataformas digitales.",
+      "Recepci\u00f3n, almacenaje din\u00e1mico en ZMG y Monterrey, procesamiento de \u00f3rdenes y env\u00edo directo al cliente. Integraci\u00f3n con plataformas digitales.",
     tags: ["Picking", "Packing", "Integraciones"],
   },
   {
@@ -173,7 +173,7 @@ export const value = {
   ] as ValueListItem[],
   metrics: [
     { value: "Eficiencia", label: "Optimizaci\u00f3n de costos log\u00edsticos" },
-    { value: "Cobertura", label: "Presencia operativa nacional" },
+    { value: "Cobertura", label: "Presencia operativa ZMG y Monterrey" },
     { value: "Calidad", label: "Proveedores certificados en la red" },
     { value: "Control", label: "Seguimiento y trazabilidad operativa" },
   ] as ValueMetric[],
@@ -223,13 +223,13 @@ export const targets: TargetCard[] = [
     emoji: "🗺️",
     title: "Distribuidores Regionales",
     description:
-      "Operan en m\u00faltiples regiones y necesitan almacenes estrat\u00e9gicos para optimizar costos de distribuci\u00f3n.",
+      "Operan en m\u00faltiples regiones y necesitan almacenes estrat\u00e9gicos en ZMG y Monterrey para optimizar costos de distribuci\u00f3n.",
   },
   {
     emoji: "✈️",
     title: "Importadores y Exportadores",
     description:
-      "Empresas que requieren almacenaje aduanal, gesti\u00f3n de inventarios y transporte multimodal integrado.",
+      "Empresas que requieren almacenaje aduanal en ZMG y Monterrey, gesti\u00f3n de inventarios y transporte multimodal integrado.",
   },
 ];
 
@@ -243,7 +243,7 @@ export const cta = {
   whatsappLabel: "Escribir por WhatsApp",
   telHref: "tel:+523321847482",
   telLabel: "Llamar ahora",
-  location: "📍 Guadalajara, Jalisco \u00a0\u00b7\u00a0 Cobertura Nacional \u00a0\u00b7\u00a0 contacto@lynkargo.com",
+  location: "📍 Guadalajara, Jalisco \u00a0\u00b7\u00a0 Cobertura ZMG y Monterrey \u00a0\u00b7\u00a0 contacto@lynkargo.com",
 };
 
 export const footer = {
